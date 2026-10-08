@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.4.3
   go_router: ^18.0.2
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,10 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
+
+  # Icone Streamline (CC BY 4.0, vedi docs/icons-license.md).
+  assets:
+    - assets/icons/
 
   # Unico font dell'app (licenza OFL in assets/fonts/OFL.txt).
   fonts:
