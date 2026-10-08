@@ -4,7 +4,12 @@ import 'package:levelup/theme/icons.dart';
 
 /// A line icon from the Streamline set, tinted with a single [color].
 class AppIcon extends StatelessWidget {
-  const AppIcon(this.name, {required this.size, required this.color, super.key});
+  const AppIcon(
+    this.name, {
+    required this.size,
+    required this.color,
+    super.key,
+  });
 
   /// Icon key (see [AppIcons]); an unknown key shows the default icon.
   final String name;
