@@ -29,7 +29,8 @@ Nessun comando di build/release è ancora definito (si aggiungerà quando serve)
 ## Struttura `lib/`
 
 Vedi `docs/design/design.md` §2 per l'albero completo (`app/`, `theme/`, `domain/`, `data/`, `state/`, `ui/atoms|molecules|organisms|screens|overlays`). Regole chiave:
-- Widget `Lu*` usano solo token di tema (`context.lu.*`, `LuText.*`, `LuSpace.*`), mai colori hex.
+- I widget usano solo token di tema (`context.colors.*`, `AppText.*`, `Spacing.*`), mai colori hex.
+- Niente prefisso `Lu`/`lu_` in classi e file (decisione di review PR #2): l'app è `LevelUpApp`, i file in `lib/theme/` sono `colors.dart`, `text.dart`, …; se un nome collide con Flutter si usa uno più specifico (`AppColors`, `AppText`). Gli enum di dominio stanno tutti in `lib/domain/enums.dart`.
 - Il modello dati salva chiavi (`hue`, `icon`, `tier`, `accent`), non colori risolti.
 - `domain/game_rules.dart` è logica pura, senza UI, testabile in isolamento.
 

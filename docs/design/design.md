@@ -75,7 +75,7 @@ Ogni sezione e componente del Design System ha un anchor (`#id`). Apri il docume
 
 Ogni card ha un footer con la **specifica** (misure, stati, regole): è la parte da leggere per implementare.
 
-**Leggere i valori:** usa i nomi dei token delle tabelle (`surface`, `elev`, `text2`…), mai valori esadecimali sparsi. In Dart: `context.lu.surface`.
+**Leggere i valori:** usa i nomi dei token delle tabelle (`surface`, `elev`, `text2`…), mai valori esadecimali sparsi. In Dart: `context.colors.surface`.
 
 ---
 
@@ -86,10 +86,10 @@ lib/
   main.dart
   app/router.dart                 # go_router
   theme/
-    lu_tokens.dart                # LuSpace, LuRadius, LuShadow, LuMotion
-    lu_colors.dart                # ThemeExtension<LuColors> light/dark(accent)
-    lu_text.dart                  # LuText (Space Mono)
-    lu_icons.dart                 # chiave → asset SVG
+    tokens.dart                   # Spacing, Radii, Shadows, Motion
+    colors.dart                   # ThemeExtension<AppColors> light/dark(accent)
+    text.dart                       # AppText (Space Mono)
+    icons.dart                 # chiave → asset SVG
   domain/
     models.dart                   # Hero, Habit, Reward, Redemption, Completion, enum
     game_rules.dart               # funzioni pure (vedi §4)
@@ -97,7 +97,7 @@ lib/
   data/                           # repository (locale + sync cloud)
   state/                          # controller (Riverpod / Bloc)
   ui/
-    atoms/ molecules/ organisms/  # widget Lu*
+    atoms/ molecules/ organisms/  # widget (senza prefisso Lu)
     screens/                      # una cartella per vista (§5)
     overlays/                     # feedback overlay + toast
 assets/
@@ -106,10 +106,10 @@ assets/
 ```
 
 **Regole**
-- I widget usano solo token (`context.lu.*`, `LuText.*`, `LuSpace.*`), mai hex.
+- I widget usano solo token (`context.colors.*`, `AppText.*`, `Spacing.*`), mai hex.
 - I colori **non** si salvano nel modello: si salvano chiavi (`hue`, `icon`, `tier`, `accent`) risolte dal tema.
 - `game_rules.dart` è logica pura e testabile, senza UI.
-- I widget `Lu*` sono stateless dove possibile: lo stato sta nei controller.
+- I widget sono stateless dove possibile: lo stato sta nei controller.
 - Font: Space Mono 400/700 (+ italic 400). Nessun altro font.
 
 ---
@@ -259,7 +259,7 @@ I grafici leggono lo storico `Completion` (Lun→Dom; oggi evidenziato, giorni f
 
 ## 7. Motion
 
-Token in `#motion` → `LuMotion`:
+Token in `#motion` → `Motion`:
 - `spring` `cubic(.34,1.56,.5,1)` 180–200ms: feedback pressione (scale .965 grandi / .88 piccoli)
 - `out` `cubic(.2,.8,.2,1)` 300–500ms: sheet, barre, ring
 - `pop` `cubic(.2,.9,.3,1.2–1.3)` 450–600ms: overlay, level up
@@ -271,7 +271,7 @@ Animazioni nominate: `popIn`, `pop2`, `rise`, `floatUp`, `itemIn`, `blockUp`, `r
 
 ## 8. Checklist di implementazione
 
-1. Token e tema (`lu_colors`, `lu_text`, `lu_tokens`), font, icone SVG
+1. Token e tema (`colors`, `text`, `tokens`), font, icone SVG
 2. Modelli e `game_rules` con unit test (EXP, multi level up, riscatto, medaglie)
 3. Atomi → molecole → organismi (verifica ogni widget con gli stati della card nel DS)
 4. Router e viste nell'ordine: Home → Dettaglio/Form habit → Overlay → Reward Shop/Form → Profilo/Impostazioni → Missione → Registrazione/Onboarding
