@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:levelup/theme/lu_tokens.dart';
+import 'package:levelup/theme/tokens.dart';
 
 Future<BuildContext> _pumpWithMedia(
   WidgetTester tester, {
@@ -22,19 +22,19 @@ Future<BuildContext> _pumpWithMedia(
 }
 
 void main() {
-  group('LuMotion reduced animations', () {
+  group('Motion reduced animations', () {
     testWidgets('reduced is true when the platform disables animations', (
       tester,
     ) async {
       final context = await _pumpWithMedia(tester, disableAnimations: true);
 
-      expect(LuMotion.reduced(context), isTrue);
+      expect(Motion.reduced(context), isTrue);
     });
 
     testWidgets('reduced is false by default', (tester) async {
       final context = await _pumpWithMedia(tester, disableAnimations: false);
 
-      expect(LuMotion.reduced(context), isFalse);
+      expect(Motion.reduced(context), isFalse);
     });
 
     testWidgets('duration keeps the requested value when not reduced', (
@@ -42,7 +42,7 @@ void main() {
     ) async {
       final context = await _pumpWithMedia(tester, disableAnimations: false);
 
-      expect(LuMotion.duration(context, LuMotion.popLong), LuMotion.popLong);
+      expect(Motion.duration(context, Motion.popLong), Motion.popLong);
     });
 
     testWidgets('duration falls back to a 150 ms fade when reduced', (
@@ -51,10 +51,10 @@ void main() {
       final context = await _pumpWithMedia(tester, disableAnimations: true);
 
       expect(
-        LuMotion.duration(context, LuMotion.popLong),
+        Motion.duration(context, Motion.popLong),
         const Duration(milliseconds: 150),
       );
-      expect(LuMotion.reducedFade, const Duration(milliseconds: 150));
+      expect(Motion.reducedFade, const Duration(milliseconds: 150));
     });
   });
 }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:levelup/domain/accent_key.dart';
-import 'package:levelup/domain/habit_hue.dart';
-import 'package:levelup/theme/lu_color_math.dart';
-import 'package:levelup/theme/lu_colors.dart';
-import 'package:levelup/theme/lu_palettes.dart';
+import 'package:levelup/domain/enums.dart';
+import 'package:levelup/theme/color_math.dart';
+import 'package:levelup/theme/colors.dart';
+import 'package:levelup/theme/palettes.dart';
 
 /// Asserts that [actual] has the RGB channels described by [hex] (0xRRGGBB)
 /// within [tolerance] per channel (0..1). Alpha is checked separately.
@@ -15,11 +14,11 @@ void expectRgb(Color actual, int hex, {double tolerance = .004}) {
 }
 
 void main() {
-  final terra = LuPalettes.accent(AccentKey.terra);
-  final light = LuColors.light(terra);
-  final dark = LuColors.dark(terra);
+  final terra = Palettes.accent(AccentKey.terra);
+  final light = AppColors.light(terra);
+  final dark = AppColors.dark(terra);
 
-  group('LuColors semantic tokens (#t-colori)', () {
+  group('AppColors semantic tokens (#t-colori)', () {
     test('light theme matches the design system table', () {
       expectRgb(light.bg, 0xF4F0E4);
       expectRgb(light.canvas, 0xDEDAD1);
@@ -88,7 +87,7 @@ void main() {
     });
   });
 
-  group('LuColors accent derivatives (#t-accenti)', () {
+  group('AppColors accent derivatives (#t-accenti)', () {
     test('accent is the colour passed to the factory', () {
       expect(light.accent, terra);
       expect(dark.accent, terra);
@@ -121,9 +120,9 @@ void main() {
 
     test('derivatives follow every accent palette', () {
       for (final key in AccentKey.values) {
-        final accent = LuPalettes.accent(key);
+        final accent = Palettes.accent(key);
 
-        final colors = LuColors.light(accent);
+        final colors = AppColors.light(accent);
 
         expect(colors.accent, accent, reason: key.name);
         expect(colors.accentDeep, shade(accent, .28), reason: key.name);
@@ -131,7 +130,7 @@ void main() {
     });
   });
 
-  group('LuColors habit hues (#t-hue)', () {
+  group('AppColors habit hues (#t-hue)', () {
     test('blue, teal, green and gold are fixed in the light theme', () {
       expectRgb(light.hue(HabitHue.blue).tint, 0xC7DFF2);
       expectRgb(light.hue(HabitHue.blue).ink, 0x3F79AD);
@@ -153,7 +152,7 @@ void main() {
     });
 
     test('fixed hues do not change with the accent', () {
-      final other = LuColors.light(LuPalettes.accent(AccentKey.ardesia));
+      final other = AppColors.light(Palettes.accent(AccentKey.ardesia));
 
       expect(other.hue(HabitHue.teal).tint, light.hue(HabitHue.teal).tint);
       expect(other.hue(HabitHue.teal).ink, light.hue(HabitHue.teal).ink);
@@ -175,13 +174,13 @@ void main() {
     });
 
     test('red hue follows the accent', () {
-      final salvia = LuColors.dark(LuPalettes.accent(AccentKey.salvia));
+      final salvia = AppColors.dark(Palettes.accent(AccentKey.salvia));
 
-      expect(salvia.hue(HabitHue.red).ink, LuPalettes.accent(AccentKey.salvia));
+      expect(salvia.hue(HabitHue.red).ink, Palettes.accent(AccentKey.salvia));
     });
   });
 
-  group('LuColors as ThemeExtension', () {
+  group('AppColors as ThemeExtension', () {
     test('copyWith replaces only the given token', () {
       final copy = light.copyWith(bg: const Color(0xFF123456));
 
@@ -195,7 +194,7 @@ void main() {
       expect(light.lerp(dark, 1).bg, dark.bg);
     });
 
-    test('lerp with a non LuColors value returns this', () {
+    test('lerp with a non AppColors value returns this', () {
       expect(light.lerp(null, .5), same(light));
     });
 

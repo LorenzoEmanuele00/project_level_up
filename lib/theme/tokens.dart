@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 /// Spacing scale (base 4).
-abstract final class LuSpace {
+abstract final class Spacing {
   static const xs = 4.0;
   static const sm = 8.0;
   static const md = 12.0;
@@ -15,7 +15,7 @@ abstract final class LuSpace {
 }
 
 /// Corner radii.
-abstract final class LuRadius {
+abstract final class Radii {
   static const bar = 6.0;
   static const chip = 10.0;
   static const field = 14.0;
@@ -27,7 +27,7 @@ abstract final class LuRadius {
 }
 
 /// Shadows and glows. Colours are passed in so they follow the theme.
-abstract final class LuShadow {
+abstract final class Shadows {
   static List<BoxShadow> ctaGlow(Color accent) => [
     BoxShadow(
       color: accent,
@@ -67,7 +67,7 @@ abstract final class LuShadow {
 }
 
 /// Curves and durations. Honour reduced motion through [duration].
-abstract final class LuMotion {
+abstract final class Motion {
   /// Press feedback.
   static const spring = Cubic(.34, 1.56, .5, 1);
 

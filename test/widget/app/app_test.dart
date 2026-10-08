@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:levelup/app/app.dart';
-import 'package:levelup/domain/accent_key.dart';
+import 'package:levelup/domain/enums.dart';
 import 'package:levelup/state/theme_settings.dart';
-import 'package:levelup/theme/lu_colors.dart';
-import 'package:levelup/theme/lu_palettes.dart';
+import 'package:levelup/theme/colors.dart';
+import 'package:levelup/theme/palettes.dart';
 import 'package:levelup/ui/screens/home_placeholder.dart';
 
 Future<ProviderContainer> _pumpApp(WidgetTester tester) async {
   final container = ProviderContainer();
   addTearDown(container.dispose);
   await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: const LuApp()),
+    UncontrolledProviderScope(container: container, child: const LevelUpApp()),
   );
   await tester.pumpAndSettle();
   return container;
@@ -21,10 +21,11 @@ Future<ProviderContainer> _pumpApp(WidgetTester tester) async {
 ThemeData _theme(WidgetTester tester) =>
     Theme.of(tester.element(find.byType(HomePlaceholder)));
 
-LuColors _colors(WidgetTester tester) => _theme(tester).extension<LuColors>()!;
+AppColors _colors(WidgetTester tester) =>
+    _theme(tester).extension<AppColors>()!;
 
 void main() {
-  group('LuApp', () {
+  group('LevelUpApp', () {
     testWidgets('opens the placeholder home on route /', (tester) async {
       await _pumpApp(tester);
 
@@ -37,8 +38,8 @@ void main() {
       await _pumpApp(tester);
 
       final colors = _colors(tester);
-      expect(colors.accent, LuPalettes.accent(AccentKey.terra));
-      expect(colors.bg, LuColors.light(colors.accent).bg);
+      expect(colors.accent, Palettes.accent(AccentKey.terra));
+      expect(colors.bg, AppColors.light(colors.accent).bg);
     });
 
     testWidgets('changing the accent rebuilds the whole theme', (tester) async {
@@ -50,8 +51,8 @@ void main() {
       await tester.pumpAndSettle();
 
       final colors = _colors(tester);
-      expect(colors.accent, LuPalettes.accent(AccentKey.salvia));
-      expect(colors.accentDeep, LuColors.light(colors.accent).accentDeep);
+      expect(colors.accent, Palettes.accent(AccentKey.salvia));
+      expect(colors.accentDeep, AppColors.light(colors.accent).accentDeep);
       expect(_theme(tester).colorScheme.primary, colors.accent);
     });
 

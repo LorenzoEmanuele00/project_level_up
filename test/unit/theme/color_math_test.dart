@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:levelup/theme/lu_color_math.dart';
+import 'package:levelup/theme/color_math.dart';
 
 void main() {
   const white = Color(0xFFFFFFFF);

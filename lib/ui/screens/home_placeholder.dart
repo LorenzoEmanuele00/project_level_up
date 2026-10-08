@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:levelup/theme/lu_text.dart';
-import 'package:levelup/theme/lu_theme.dart';
+import 'package:levelup/theme/text.dart';
+import 'package:levelup/theme/theme.dart';
 
 /// Empty home shown until the real Home screen is built.
 class HomePlaceholder extends StatelessWidget {
@@ -12,7 +12,7 @@ class HomePlaceholder extends StatelessWidget {
       body: Center(
         child: Text(
           'LevelUp',
-          style: LuText.display.copyWith(color: context.lu.text),
+          style: AppText.display.copyWith(color: context.colors.text),
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:levelup/domain/accent_key.dart';
+import 'package:levelup/domain/enums.dart';
 import 'package:levelup/state/theme_settings.dart';
 
 ProviderContainer _container() {

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Colour literals are only allowed inside `lib/theme/`. Everything else must
-/// read tokens through `context.lu.*`. `Colors.transparent` is the one
+/// read tokens through `context.colors.*`. `Colors.transparent` is the one
 /// exception: it carries no design decision.
 final _forbidden = RegExp(
   r'\bColor\(\s*(0x[0-9a-fA-F]+|\d+)'
@@ -44,7 +44,7 @@ void main() {
 
     test('accepts Colors.transparent and token access', () {
       expect(findColorLiterals('color: Colors.transparent'), isEmpty);
-      expect(findColorLiterals('color: context.lu.surface'), isEmpty);
+      expect(findColorLiterals('color: context.colors.surface'), isEmpty);
     });
 
     test('reports the offending literal', () {
@@ -66,7 +66,7 @@ void main() {
         if (matches.isNotEmpty) offenders.add('$path: ${matches.join(', ')}');
       }
 
-      expect(offenders, isEmpty, reason: 'use context.lu.* instead of hex');
+      expect(offenders, isEmpty, reason: 'use context.colors.* instead of hex');
     });
   });
 }

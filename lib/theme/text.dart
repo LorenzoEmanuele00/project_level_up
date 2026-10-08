@@ -1,8 +1,8 @@
 import 'package:flutter/painting.dart';
 
 /// Type scale of the design system (Space Mono only). Styles carry no colour:
-/// the component applies it from `context.lu`.
-abstract final class LuText {
+/// the component applies it from `context.colors`.
+abstract final class AppText {
   static const _family = 'SpaceMono';
 
   static const display = TextStyle(

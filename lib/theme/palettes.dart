@@ -2,16 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
-import 'package:levelup/domain/accent_key.dart';
-import 'package:levelup/domain/medal_tier.dart';
-import 'package:levelup/domain/reward_tier.dart';
+import 'package:levelup/domain/enums.dart';
 
-enum LuStatKind { peach, mint, sky, butter }
+enum StatKind { peach, mint, sky, butter }
 
 /// Fill, label and value colours of a pastel stat tile. Same in both themes.
 @immutable
-class LuStatTone {
-  const LuStatTone({
+class StatTone {
+  const StatTone({
     required this.fill,
     required this.label,
     required this.value,
@@ -24,8 +22,8 @@ class LuStatTone {
 
 /// Gradient pair and ring colour of a medal tier. Same in both themes.
 @immutable
-class LuMedalTone {
-  const LuMedalTone({required this.c1, required this.c2, required this.ring});
+class MedalTone {
+  const MedalTone({required this.c1, required this.c2, required this.ring});
 
   final Color c1;
   final Color c2;
@@ -48,7 +46,7 @@ final _gradientEnd = () {
 }();
 
 /// Palettes that do not depend on the theme (light/dark), plus the accents.
-abstract final class LuPalettes {
+abstract final class Palettes {
   static Color accent(AccentKey key) => switch (key) {
     AccentKey.terra => const Color(0xFFD9614C),
     AccentKey.ambra => const Color(0xFFCF9C4D),
@@ -57,41 +55,41 @@ abstract final class LuPalettes {
     AccentKey.rosa => const Color(0xFFC56B7A),
   };
 
-  static LuStatTone stat(LuStatKind kind) => switch (kind) {
-    LuStatKind.peach => const LuStatTone(
+  static StatTone stat(StatKind kind) => switch (kind) {
+    StatKind.peach => const StatTone(
       fill: Color(0xFFF6D6C1),
       label: Color(0xFFA55A33),
       value: Color(0xFF7A3D1E),
     ),
-    LuStatKind.mint => const LuStatTone(
+    StatKind.mint => const StatTone(
       fill: Color(0xFFCFE6C4),
       label: Color(0xFF3F7A2E),
       value: Color(0xFF26401C),
     ),
-    LuStatKind.sky => const LuStatTone(
+    StatKind.sky => const StatTone(
       fill: Color(0xFFC7DEF2),
       label: Color(0xFF3A5A74),
       value: Color(0xFF16324A),
     ),
-    LuStatKind.butter => const LuStatTone(
+    StatKind.butter => const StatTone(
       fill: Color(0xFFF2D385),
       label: Color(0xFF8A6A1C),
       value: Color(0xFF4A3D17),
     ),
   };
 
-  static LuMedalTone medal(MedalTier tier) => switch (tier) {
-    MedalTier.bronzo => const LuMedalTone(
+  static MedalTone medal(MedalTier tier) => switch (tier) {
+    MedalTier.bronzo => const MedalTone(
       c1: Color(0xFFD69457),
       c2: Color(0xFFA05A2C),
       ring: Color(0xFFC67F45),
     ),
-    MedalTier.argento => const LuMedalTone(
+    MedalTier.argento => const MedalTone(
       c1: Color(0xFFD3D7DE),
       c2: Color(0xFF9298A3),
       ring: Color(0xFFB7BCC5),
     ),
-    MedalTier.oro => const LuMedalTone(
+    MedalTier.oro => const MedalTone(
       c1: Color(0xFFE6C060),
       c2: Color(0xFFB3831F),
       ring: Color(0xFFD3A24A),

@@ -3,5 +3,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:levelup/app/app.dart';
 
 void main() {
-  runApp(const ProviderScope(child: LuApp()));
+  runApp(const ProviderScope(child: LevelUpApp()));
 }

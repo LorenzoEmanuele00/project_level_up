@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:levelup/domain/accent_key.dart';
+import 'package:levelup/domain/enums.dart';
 
 /// Theme choice of the user: light/dark and accent.
 ///

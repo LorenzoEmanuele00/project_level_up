@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:levelup/domain/habit_hue.dart';
-import 'package:levelup/theme/lu_color_math.dart';
+import 'package:levelup/domain/enums.dart';
+import 'package:levelup/theme/color_math.dart';
 
 /// Background (tint) and text/icon (ink) colours of a habit hue.
 @immutable
-class LuHueTone {
-  const LuHueTone({required this.tint, required this.ink});
+class HueTone {
+  const HueTone({required this.tint, required this.ink});
 
   final Color tint;
   final Color ink;
@@ -13,33 +13,33 @@ class LuHueTone {
 
 const _white = Color(0xFFFFFFFF);
 
-const _lightBlue = LuHueTone(tint: Color(0xFFC7DFF2), ink: Color(0xFF3F79AD));
-const _lightTeal = LuHueTone(tint: Color(0xFFC4E7DD), ink: Color(0xFF2F8171));
-const _lightGreen = LuHueTone(tint: Color(0xFFD5E8C1), ink: Color(0xFF5B9243));
-const _lightGold = LuHueTone(tint: Color(0xFFF3DB95), ink: Color(0xFF9F7419));
+const _lightBlue = HueTone(tint: Color(0xFFC7DFF2), ink: Color(0xFF3F79AD));
+const _lightTeal = HueTone(tint: Color(0xFFC4E7DD), ink: Color(0xFF2F8171));
+const _lightGreen = HueTone(tint: Color(0xFFD5E8C1), ink: Color(0xFF5B9243));
+const _lightGold = HueTone(tint: Color(0xFFF3DB95), ink: Color(0xFF9F7419));
 
-const _darkBlue = LuHueTone(
+const _darkBlue = HueTone(
   tint: Color.fromRGBO(89, 136, 192, .16),
   ink: Color(0xFF6F9ED6),
 );
-const _darkTeal = LuHueTone(
+const _darkTeal = HueTone(
   tint: Color.fromRGBO(63, 168, 155, .16),
   ink: Color(0xFF54C2B4),
 );
-const _darkGreen = LuHueTone(
+const _darkGreen = HueTone(
   tint: Color.fromRGBO(91, 156, 111, .16),
   ink: Color(0xFF6FBF87),
 );
-const _darkGold = LuHueTone(
+const _darkGold = HueTone(
   tint: Color.fromRGBO(211, 162, 74, .16),
   ink: Color(0xFFD3A24A),
 );
 
 /// Semantic colour tokens of the design system (`#t-colori`), for one theme
-/// and one accent. Widgets read it through `context.lu`.
+/// and one accent. Widgets read it through `context.colors`.
 @immutable
-class LuColors extends ThemeExtension<LuColors> {
-  const LuColors({
+class AppColors extends ThemeExtension<AppColors> {
+  const AppColors({
     required this.isDark,
     required this.bg,
     required this.canvas,
@@ -61,7 +61,7 @@ class LuColors extends ThemeExtension<LuColors> {
     required this.obGlow,
   });
 
-  factory LuColors.light(Color accent) => LuColors(
+  factory AppColors.light(Color accent) => AppColors(
     isDark: false,
     bg: const Color(0xFFF4F0E4),
     canvas: const Color(0xFFDEDAD1),
@@ -83,7 +83,7 @@ class LuColors extends ThemeExtension<LuColors> {
     obGlow: accent.withValues(alpha: .12),
   );
 
-  factory LuColors.dark(Color accent) => LuColors(
+  factory AppColors.dark(Color accent) => AppColors(
     isDark: true,
     bg: const Color(0xFF191817),
     canvas: const Color(0xFF0C0C0B),
@@ -149,7 +149,7 @@ class LuColors extends ThemeExtension<LuColors> {
 
   /// Tint/ink pair of a habit hue. `red` follows the accent; the others are
   /// fixed and only depend on the theme.
-  LuHueTone hue(HabitHue key) => switch (key) {
+  HueTone hue(HabitHue key) => switch (key) {
     HabitHue.red => _redTone(),
     HabitHue.blue => isDark ? _darkBlue : _lightBlue,
     HabitHue.teal => isDark ? _darkTeal : _lightTeal,
@@ -159,15 +159,15 @@ class LuColors extends ThemeExtension<LuColors> {
 
   // The design system only gives the light values for the terra accent, so
   // for the other accents the tint/ink pair is derived (see Domande Aperte).
-  LuHueTone _redTone() => isDark
-      ? LuHueTone(tint: accent.withValues(alpha: .15), ink: accent)
-      : LuHueTone(
+  HueTone _redTone() => isDark
+      ? HueTone(tint: accent.withValues(alpha: .15), ink: accent)
+      : HueTone(
           tint: Color.lerp(accent, _white, .70) ?? accent,
           ink: shade(accent, .12),
         );
 
   @override
-  LuColors copyWith({
+  AppColors copyWith({
     bool? isDark,
     Color? bg,
     Color? canvas,
@@ -187,7 +187,7 @@ class LuColors extends ThemeExtension<LuColors> {
     Color? accentSoft,
     Color? accentLine,
     Color? obGlow,
-  }) => LuColors(
+  }) => AppColors(
     isDark: isDark ?? this.isDark,
     bg: bg ?? this.bg,
     canvas: canvas ?? this.canvas,
@@ -210,10 +210,10 @@ class LuColors extends ThemeExtension<LuColors> {
   );
 
   @override
-  LuColors lerp(ThemeExtension<LuColors>? other, double t) {
-    if (other is! LuColors) return this;
+  AppColors lerp(ThemeExtension<AppColors>? other, double t) {
+    if (other is! AppColors) return this;
     Color mix(Color a, Color b) => Color.lerp(a, b, t) ?? a;
-    return LuColors(
+    return AppColors(
       isDark: t < .5 ? isDark : other.isDark,
       bg: mix(bg, other.bg),
       canvas: mix(canvas, other.canvas),
