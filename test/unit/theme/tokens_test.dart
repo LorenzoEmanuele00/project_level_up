@@ -24,18 +24,18 @@ void main() {
     });
   });
 
-  group('Radius', () {
+  group('AppRadius', () {
     test('exposes the radius scale from the design system', () {
       expect(
         [
-          Radius.bar,
-          Radius.chip,
-          Radius.field,
-          Radius.cta,
-          Radius.card,
-          Radius.tile,
-          Radius.sheet,
-          Radius.hero,
+          AppRadius.bar,
+          AppRadius.chip,
+          AppRadius.field,
+          AppRadius.cta,
+          AppRadius.card,
+          AppRadius.tile,
+          AppRadius.sheet,
+          AppRadius.hero,
         ],
         [6.0, 10.0, 14.0, 16.0, 18.0, 22.0, 26.0, 30.0],
       );

@@ -15,7 +15,7 @@ abstract final class Spacing {
 }
 
 /// Corner radii.
-abstract final class Radius {
+abstract final class AppRadius {
   static const bar = 6.0;
   static const chip = 10.0;
   static const field = 14.0;

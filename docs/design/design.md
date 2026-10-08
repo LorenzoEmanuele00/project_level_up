@@ -86,7 +86,7 @@ lib/
   main.dart
   app/router.dart                 # go_router
   theme/
-    tokens.dart                   # Spacing, Radius, Shadows, Motion
+    tokens.dart                   # Spacing, AppRadius, Shadows, Motion
     colors.dart                   # ThemeExtension<AppColors> light/dark(accent)
     text.dart                       # AppText (Space Mono)
     icons.dart                 # chiave → asset SVG
