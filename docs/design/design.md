@@ -117,7 +117,7 @@ assets/
 ## 3. Theming
 
 - Due temi (`light` default, `dark`) con la stessa struttura. Vedi tabella `#t-colori`.
-- **Accento** scelto dall'utente tra 5 palette: Terra `#d9614c`, Ambra `#cf9c4d`, Salvia `#5b9c6f`, Ardesia `#5988c0`, Rosa `#c56b7a`.
+- **Accento** scelto dall'utente tra 5 palette: Terra `#d9614c`, Ambra `#cf9c4d`, Salvia `#5b9c6f`, Ardesia `#5988c0`, Rosa `#c56b7a`. Chiavi nel codice (inglesi, le etichette localizzate stanno nel layer l10n): `terracotta`, `amber`, `sage`, `slate`, `rose`.
 - Derivati calcolati a runtime:
   - `accentDeep = shade(accent, .28)` (scurisce del 28%)
   - `accent2 = shade(accent, -.12)` (schiarisce)
@@ -135,18 +135,22 @@ Costanti configurabili: `expPerLevel = 100`, `rpPerLevel = 5` (range 3–10).
 
 | Regola | Valore |
 |---|---|
-| EXP per completamento | facile 10 · media 20 · difficile 40 (fissa) |
+| EXP per completamento | facile (`easy`) 10 · media (`medium`) 20 · difficile (`hard`) 40 (fissa) |
 | Completamento | max 1 al giorno per habit |
 | Level up | `while (exp >= expPerLevel) { exp -= expPerLevel; level++; rp += rpPerLevel; }` |
-| Costo reward | piccola 10 · media 25 · grande 60 RP |
-| Livelli per reward | `ceil(cost / rpPerLevel)` (mostrato nel form reward) |
+| Costo reward | piccola (`small`) 10 · media (`medium`) 25 · grande (`large`) 60 RP |
+| Livelli per reward | `ceil(cost / rpPerLevel)` (mostrato nel form reward; la funzione di dominio nasce con la card UI che lo mostra) |
 | Riscatto | se `rp >= cost`: `rp -= cost`, crea `Redemption` e rimuovi la reward dalla lista disponibili; altrimenti toast con `cost - rp` |
-| Streak | +1 a ogni completamento. **Da definire:** azzeramento quando salti un giorno dovuto (job giornaliero) |
+| Streak | +1 a ogni completamento (anche oltre la quota settimanale di una `xN`, sempre max 1 al giorno). Azzeramento lazy (`refreshStreak`, nessun job): giornaliera se passa un giorno senza completarla; `xN` se la settimana lun–dom si chiude sotto quota. Nella settimana di creazione la quota è `min(N, giorni rimasti fino a domenica)` (`Habit.createdAt`). |
 | Missione giornaliera | `questPct = doneToday / dueToday`; completata = tutte le dovute fatte |
 | Medaglie | 4 tracce × 3 tier (tabella `#regole`): streak 10/50/100, completamenti 25/100/250, livello 5/15/30, riscatti 1/5/12 |
 
 **Pseudocodice completamento**
 ```dart
+// Pseudocodice di riferimento: l'implementazione reale (lib/domain/game_rules.dart)
+// usa GameHero (non Hero, collide con Flutter), CompletionFeedback al posto di
+// Overlay, risultati sealed (Completed / AlreadyDoneToday / HabitArchived) e
+// riceve id e completamenti della settimana come parametri.
 CompletionResult complete(Hero hero, Habit h, DateTime now) {
   if (h.isDoneOn(now)) return CompletionResult.noop();
   final habit = h.copyWith(streak: h.streak + 1, totalCompletions: h.totalCompletions + 1, lastCompletedAt: now);
@@ -278,7 +282,7 @@ Animazioni nominate: `popIn`, `pop2`, `rise`, `floatUp`, `itemIn`, `blockUp`, `r
 5. Persistenza locale, poi sync cloud e notifiche
 
 ## 9. Punti aperti (da confermare con design)
-- Regola di azzeramento streak e calendario delle frequenze settimanali (`isDueOn`)
+- ~~Regola di azzeramento streak e calendario delle frequenze settimanali (`isDueOn`)~~ — risolto e implementato in PLU-11 (vedi §4)
 - Modifica reward (prevista nel modello, nessun accesso UI nel prototipo)
 - Login reale (Apple/Google/email) e contenuto di "Sync cloud"
 - Orari notifiche configurabili (nel prototipo sono fissi: 08:00, 20:00)

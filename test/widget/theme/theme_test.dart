@@ -8,17 +8,17 @@ import 'package:levelup/theme/theme.dart';
 void main() {
   group('buildTheme', () {
     test('light theme carries AppColors.light for the accent', () {
-      final theme = buildTheme(Brightness.light, AccentKey.salvia);
+      final theme = buildTheme(Brightness.light, AccentKey.sage);
 
       final colors = theme.extension<AppColors>()!;
 
       expect(theme.brightness, Brightness.light);
-      expect(colors.accent, Palettes.accent(AccentKey.salvia));
+      expect(colors.accent, Palettes.accent(AccentKey.sage));
       expect(colors.bg, AppColors.light(colors.accent).bg);
     });
 
     test('dark theme carries AppColors.dark for the accent', () {
-      final theme = buildTheme(Brightness.dark, AccentKey.rosa);
+      final theme = buildTheme(Brightness.dark, AccentKey.rose);
 
       final colors = theme.extension<AppColors>()!;
 
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('scaffold uses the bg token and colour scheme uses the accent', () {
-      final theme = buildTheme(Brightness.light, AccentKey.ambra);
+      final theme = buildTheme(Brightness.light, AccentKey.amber);
 
       final colors = theme.extension<AppColors>()!;
 
@@ -36,15 +36,15 @@ void main() {
     });
 
     test('the whole text theme uses SpaceMono', () {
-      final theme = buildTheme(Brightness.light, AccentKey.terra);
+      final theme = buildTheme(Brightness.light, AccentKey.terracotta);
 
       expect(theme.textTheme.bodyMedium?.fontFamily, 'SpaceMono');
       expect(theme.textTheme.titleLarge?.fontFamily, 'SpaceMono');
     });
 
     test('different accents produce different themes', () {
-      final a = buildTheme(Brightness.light, AccentKey.terra);
-      final b = buildTheme(Brightness.light, AccentKey.ardesia);
+      final a = buildTheme(Brightness.light, AccentKey.terracotta);
+      final b = buildTheme(Brightness.light, AccentKey.slate);
 
       expect(a.colorScheme.primary, isNot(b.colorScheme.primary));
     });
@@ -57,7 +57,7 @@ void main() {
       late AppColors read;
       await tester.pumpWidget(
         MaterialApp(
-          theme: buildTheme(Brightness.light, AccentKey.ardesia),
+          theme: buildTheme(Brightness.light, AccentKey.slate),
           home: Builder(
             builder: (context) {
               read = context.colors;
@@ -67,7 +67,7 @@ void main() {
         ),
       );
 
-      expect(read.accent, Palettes.accent(AccentKey.ardesia));
+      expect(read.accent, Palettes.accent(AccentKey.slate));
     });
 
     testWidgets('fails loudly when the theme was not built by buildTheme', (

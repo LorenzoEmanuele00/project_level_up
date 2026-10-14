@@ -157,7 +157,7 @@ class AppColors extends ThemeExtension<AppColors> {
     HabitHue.gold => isDark ? _darkGold : _lightGold,
   };
 
-  // The design system only gives the light values for the terra accent, so
+  // The design system only gives the light values for the terracotta accent, so
   // for the other accents the tint/ink pair is derived (see Domande Aperte).
   HueTone _redTone() => isDark
       ? HueTone(tint: accent.withValues(alpha: .15), ink: accent)

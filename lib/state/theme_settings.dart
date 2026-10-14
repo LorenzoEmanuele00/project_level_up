@@ -33,7 +33,7 @@ class ThemeSettingsNotifier extends Notifier<ThemeSettings> {
   @override
   ThemeSettings build() => const ThemeSettings(
     brightness: Brightness.light,
-    accent: AccentKey.terra,
+    accent: AccentKey.terracotta,
   );
 
   void setAccent(AccentKey accent) => state = state.copyWith(accent: accent);

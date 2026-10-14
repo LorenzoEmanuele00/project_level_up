@@ -32,26 +32,24 @@ void main() {
       expect(find.byType(HomePlaceholder), findsOneWidget);
     });
 
-    testWidgets('starts in the light theme with the terra accent', (
+    testWidgets('starts in the light theme with the terracotta accent', (
       tester,
     ) async {
       await _pumpApp(tester);
 
       final colors = _colors(tester);
-      expect(colors.accent, Palettes.accent(AccentKey.terra));
+      expect(colors.accent, Palettes.accent(AccentKey.terracotta));
       expect(colors.bg, AppColors.light(colors.accent).bg);
     });
 
     testWidgets('changing the accent rebuilds the whole theme', (tester) async {
       final container = await _pumpApp(tester);
 
-      container
-          .read(themeSettingsProvider.notifier)
-          .setAccent(AccentKey.salvia);
+      container.read(themeSettingsProvider.notifier).setAccent(AccentKey.sage);
       await tester.pumpAndSettle();
 
       final colors = _colors(tester);
-      expect(colors.accent, Palettes.accent(AccentKey.salvia));
+      expect(colors.accent, Palettes.accent(AccentKey.sage));
       expect(colors.accentDeep, AppColors.light(colors.accent).accentDeep);
       expect(_theme(tester).colorScheme.primary, colors.accent);
     });
