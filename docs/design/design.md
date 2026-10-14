@@ -117,7 +117,7 @@ assets/
 ## 3. Theming
 
 - Due temi (`light` default, `dark`) con la stessa struttura. Vedi tabella `#t-colori`.
-- **Accento** scelto dall'utente tra 5 palette: Terra `#d9614c`, Ambra `#cf9c4d`, Salvia `#5b9c6f`, Ardesia `#5988c0`, Rosa `#c56b7a`.
+- **Accento** scelto dall'utente tra 5 palette: Terra `#d9614c`, Ambra `#cf9c4d`, Salvia `#5b9c6f`, Ardesia `#5988c0`, Rosa `#c56b7a`. Chiavi nel codice (inglesi, le etichette localizzate stanno nel layer l10n): `terracotta`, `amber`, `sage`, `slate`, `rose`.
 - Derivati calcolati a runtime:
   - `accentDeep = shade(accent, .28)` (scurisce del 28%)
   - `accent2 = shade(accent, -.12)` (schiarisce)
@@ -135,11 +135,11 @@ Costanti configurabili: `expPerLevel = 100`, `rpPerLevel = 5` (range 3–10).
 
 | Regola | Valore |
 |---|---|
-| EXP per completamento | facile 10 · media 20 · difficile 40 (fissa) |
+| EXP per completamento | facile (`easy`) 10 · media (`medium`) 20 · difficile (`hard`) 40 (fissa) |
 | Completamento | max 1 al giorno per habit |
 | Level up | `while (exp >= expPerLevel) { exp -= expPerLevel; level++; rp += rpPerLevel; }` |
-| Costo reward | piccola 10 · media 25 · grande 60 RP |
-| Livelli per reward | `ceil(cost / rpPerLevel)` (mostrato nel form reward) |
+| Costo reward | piccola (`small`) 10 · media (`medium`) 25 · grande (`large`) 60 RP |
+| Livelli per reward | `ceil(cost / rpPerLevel)` (mostrato nel form reward; la funzione di dominio nasce con la card UI che lo mostra) |
 | Riscatto | se `rp >= cost`: `rp -= cost`, crea `Redemption` e rimuovi la reward dalla lista disponibili; altrimenti toast con `cost - rp` |
 | Streak | +1 a ogni completamento (anche oltre la quota settimanale di una `xN`, sempre max 1 al giorno). Azzeramento lazy (`refreshStreak`, nessun job): giornaliera se passa un giorno senza completarla; `xN` se la settimana lun–dom si chiude sotto quota. Nella settimana di creazione la quota è `min(N, giorni rimasti fino a domenica)` (`Habit.createdAt`). |
 | Missione giornaliera | `questPct = doneToday / dueToday`; completata = tutte le dovute fatte |
