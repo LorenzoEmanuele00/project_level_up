@@ -10,7 +10,7 @@ import 'package:levelup/ui/atoms/icon_tile.dart';
 
 Widget _host(Widget child, {Brightness brightness = Brightness.light}) =>
     MaterialApp(
-      theme: buildTheme(brightness, AccentKey.terra),
+      theme: buildTheme(brightness, AccentKey.terracotta),
       home: Scaffold(body: Center(child: child)),
     );
 

@@ -6,7 +6,7 @@ GameHero heroFixture({int level = 1, int exp = 0, int rewardPoints = 0}) =>
     GameHero(
       id: 'hero-1',
       avatarMode: AvatarMode.initial,
-      accent: AccentKey.terra,
+      accent: AccentKey.terracotta,
       level: level,
       exp: exp,
       rewardPoints: rewardPoints,
@@ -16,7 +16,7 @@ GameHero heroFixture({int level = 1, int exp = 0, int rewardPoints = 0}) =>
 /// A daily, medium habit created long before the dates used in tests.
 Habit habitFixture({
   String id = 'habit-1',
-  Difficulty difficulty = Difficulty.media,
+  Difficulty difficulty = Difficulty.medium,
   Frequency frequency = Frequency.daily,
   int streak = 0,
   int bestStreak = 0,

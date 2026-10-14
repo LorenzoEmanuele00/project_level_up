@@ -6,11 +6,11 @@ import 'package:levelup/theme/palettes.dart';
 void main() {
   group('Palettes.accent', () {
     test('maps the five accent keys to the design system colours', () {
-      expect(Palettes.accent(AccentKey.terra), const Color(0xFFD9614C));
-      expect(Palettes.accent(AccentKey.ambra), const Color(0xFFCF9C4D));
-      expect(Palettes.accent(AccentKey.salvia), const Color(0xFF5B9C6F));
-      expect(Palettes.accent(AccentKey.ardesia), const Color(0xFF5988C0));
-      expect(Palettes.accent(AccentKey.rosa), const Color(0xFFC56B7A));
+      expect(Palettes.accent(AccentKey.terracotta), const Color(0xFFD9614C));
+      expect(Palettes.accent(AccentKey.amber), const Color(0xFFCF9C4D));
+      expect(Palettes.accent(AccentKey.sage), const Color(0xFF5B9C6F));
+      expect(Palettes.accent(AccentKey.slate), const Color(0xFF5988C0));
+      expect(Palettes.accent(AccentKey.rose), const Color(0xFFC56B7A));
     });
   });
 
@@ -40,7 +40,7 @@ void main() {
 
   group('Palettes.medal (fixed tiers)', () {
     test('bronzo gradient and ring', () {
-      final tone = Palettes.medal(MedalTier.bronzo);
+      final tone = Palettes.medal(MedalTier.bronze);
 
       expect(tone.c1, const Color(0xFFD69457));
       expect(tone.c2, const Color(0xFFA05A2C));
@@ -48,7 +48,7 @@ void main() {
     });
 
     test('argento gradient and ring', () {
-      final tone = Palettes.medal(MedalTier.argento);
+      final tone = Palettes.medal(MedalTier.silver);
 
       expect(tone.c1, const Color(0xFFD3D7DE));
       expect(tone.c2, const Color(0xFF9298A3));
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('oro gradient and ring', () {
-      final tone = Palettes.medal(MedalTier.oro);
+      final tone = Palettes.medal(MedalTier.gold);
 
       expect(tone.c1, const Color(0xFFE6C060));
       expect(tone.c2, const Color(0xFFB3831F));
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('gradient goes from c1 to c2 along the CSS 155deg line', () {
-      final tone = Palettes.medal(MedalTier.oro);
+      final tone = Palettes.medal(MedalTier.gold);
 
       final gradient = tone.gradient;
 
@@ -81,17 +81,17 @@ void main() {
 
     test('piccola and media are fixed', () {
       expect(
-        Palettes.rarity(RewardTier.piccola, accent),
+        Palettes.rarity(RewardTier.small, accent),
         const Color(0xFF6F9ED6),
       );
       expect(
-        Palettes.rarity(RewardTier.media, accent),
+        Palettes.rarity(RewardTier.medium, accent),
         const Color(0xFF54C2B4),
       );
     });
 
     test('grande follows the accent', () {
-      expect(Palettes.rarity(RewardTier.grande, accent), accent);
+      expect(Palettes.rarity(RewardTier.large, accent), accent);
     });
   });
 

@@ -3,7 +3,7 @@ import 'package:levelup/domain/enums.dart';
 import 'package:levelup/domain/models.dart';
 
 Reward makeReward() =>
-    const Reward(id: 'r1', name: 'Gelato', tier: RewardTier.piccola);
+    const Reward(id: 'r1', name: 'Gelato', tier: RewardTier.small);
 
 Redemption makeRedemption() => Redemption(
   id: 'd1',
@@ -22,9 +22,9 @@ void main() {
     test('derives its cost from the tier', () {
       final reward = makeReward();
 
-      expect(reward.copyWith(tier: RewardTier.piccola).cost, 10);
-      expect(reward.copyWith(tier: RewardTier.media).cost, 25);
-      expect(reward.copyWith(tier: RewardTier.grande).cost, 60);
+      expect(reward.copyWith(tier: RewardTier.small).cost, 10);
+      expect(reward.copyWith(tier: RewardTier.medium).cost, 25);
+      expect(reward.copyWith(tier: RewardTier.large).cost, 60);
     });
 
     test('copyWith replaces every field', () {
@@ -32,7 +32,7 @@ void main() {
         id: 'r2',
         name: 'Cena',
         note: 'fuori',
-        tier: RewardTier.grande,
+        tier: RewardTier.large,
       );
 
       expect(
@@ -41,7 +41,7 @@ void main() {
           id: 'r2',
           name: 'Cena',
           note: 'fuori',
-          tier: RewardTier.grande,
+          tier: RewardTier.large,
         ),
       );
     });
@@ -63,7 +63,7 @@ void main() {
         reward.copyWith(id: 'x'),
         reward.copyWith(name: 'x'),
         reward.copyWith(note: 'x'),
-        reward.copyWith(tier: RewardTier.media),
+        reward.copyWith(tier: RewardTier.medium),
       ];
 
       for (final variant in variants) {

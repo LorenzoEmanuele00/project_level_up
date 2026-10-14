@@ -48,11 +48,11 @@ final _gradientEnd = () {
 /// Palettes that do not depend on the theme (light/dark), plus the accents.
 abstract final class Palettes {
   static Color accent(AccentKey key) => switch (key) {
-    AccentKey.terra => const Color(0xFFD9614C),
-    AccentKey.ambra => const Color(0xFFCF9C4D),
-    AccentKey.salvia => const Color(0xFF5B9C6F),
-    AccentKey.ardesia => const Color(0xFF5988C0),
-    AccentKey.rosa => const Color(0xFFC56B7A),
+    AccentKey.terracotta => const Color(0xFFD9614C),
+    AccentKey.amber => const Color(0xFFCF9C4D),
+    AccentKey.sage => const Color(0xFF5B9C6F),
+    AccentKey.slate => const Color(0xFF5988C0),
+    AccentKey.rose => const Color(0xFFC56B7A),
   };
 
   static StatTone stat(StatKind kind) => switch (kind) {
@@ -79,28 +79,28 @@ abstract final class Palettes {
   };
 
   static MedalTone medal(MedalTier tier) => switch (tier) {
-    MedalTier.bronzo => const MedalTone(
+    MedalTier.bronze => const MedalTone(
       c1: Color(0xFFD69457),
       c2: Color(0xFFA05A2C),
       ring: Color(0xFFC67F45),
     ),
-    MedalTier.argento => const MedalTone(
+    MedalTier.silver => const MedalTone(
       c1: Color(0xFFD3D7DE),
       c2: Color(0xFF9298A3),
       ring: Color(0xFFB7BCC5),
     ),
-    MedalTier.oro => const MedalTone(
+    MedalTier.gold => const MedalTone(
       c1: Color(0xFFE6C060),
       c2: Color(0xFFB3831F),
       ring: Color(0xFFD3A24A),
     ),
   };
 
-  /// Reward rarity colour. `grande` follows the accent.
+  /// Reward rarity colour. `large` follows the accent.
   static Color rarity(RewardTier tier, Color accent) => switch (tier) {
-    RewardTier.piccola => const Color(0xFF6F9ED6),
-    RewardTier.media => const Color(0xFF54C2B4),
-    RewardTier.grande => accent,
+    RewardTier.small => const Color(0xFF6F9ED6),
+    RewardTier.medium => const Color(0xFF54C2B4),
+    RewardTier.large => accent,
   };
 
   /// Streak flame.

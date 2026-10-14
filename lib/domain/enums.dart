@@ -1,19 +1,19 @@
 /// The five selectable accent palettes. Stored as a string (never as a
 /// colour); the theme resolves it to a concrete colour.
-enum AccentKey { terra, ambra, salvia, ardesia, rosa }
+enum AccentKey { terracotta, amber, sage, slate, rose }
 
 /// Colour family of a habit. `red` follows the user's accent, the others are
 /// fixed. Stored as a key; the theme resolves it to a tint/ink pair.
 enum HabitHue { red, blue, teal, green, gold }
 
 /// Medal levels, from lowest to highest.
-enum MedalTier { bronzo, argento, oro }
+enum MedalTier { bronze, silver, gold }
 
 /// Reward rarity, with its fixed price in reward points.
 enum RewardTier {
-  piccola(10),
-  media(25),
-  grande(60);
+  small(10),
+  medium(25),
+  large(60);
 
   const RewardTier(this.cost);
 
@@ -23,9 +23,9 @@ enum RewardTier {
 
 /// Habit difficulty. Fixes the EXP earned at each completion.
 enum Difficulty {
-  facile(10),
-  media(20),
-  difficile(40);
+  easy(10),
+  medium(20),
+  hard(40);
 
   const Difficulty(this.exp);
 
@@ -47,7 +47,7 @@ enum Frequency {
 }
 
 /// Optional hero archetype chosen at onboarding.
-enum HeroClass { guerriero, studioso, monaco, creatore, esploratore }
+enum HeroClass { warrior, scholar, monk, creator, explorer }
 
 /// What the avatar shows: the name initial or a chosen icon.
 enum AvatarMode { initial, icon }

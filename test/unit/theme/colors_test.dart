@@ -14,9 +14,9 @@ void expectRgb(Color actual, int hex, {double tolerance = .004}) {
 }
 
 void main() {
-  final terra = Palettes.accent(AccentKey.terra);
-  final light = AppColors.light(terra);
-  final dark = AppColors.dark(terra);
+  final terracotta = Palettes.accent(AccentKey.terracotta);
+  final light = AppColors.light(terracotta);
+  final dark = AppColors.dark(terracotta);
 
   group('AppColors semantic tokens (#t-colori)', () {
     test('light theme matches the design system table', () {
@@ -89,17 +89,17 @@ void main() {
 
   group('AppColors accent derivatives (#t-accenti)', () {
     test('accent is the colour passed to the factory', () {
-      expect(light.accent, terra);
-      expect(dark.accent, terra);
+      expect(light.accent, terracotta);
+      expect(dark.accent, terracotta);
     });
 
     test('accentDeep is the accent darkened by 28%', () {
-      expect(light.accentDeep, shade(terra, .28));
-      expect(dark.accentDeep, shade(terra, .28));
+      expect(light.accentDeep, shade(terracotta, .28));
+      expect(dark.accentDeep, shade(terracotta, .28));
     });
 
     test('accent2 is the accent lightened by 12%', () {
-      expect(light.accent2, shade(terra, -.12));
+      expect(light.accent2, shade(terracotta, -.12));
     });
 
     test('accentSoft is accent at alpha .09 light and .15 dark', () {
@@ -152,7 +152,7 @@ void main() {
     });
 
     test('fixed hues do not change with the accent', () {
-      final other = AppColors.light(Palettes.accent(AccentKey.ardesia));
+      final other = AppColors.light(Palettes.accent(AccentKey.slate));
 
       expect(other.hue(HabitHue.teal).tint, light.hue(HabitHue.teal).tint);
       expect(other.hue(HabitHue.teal).ink, light.hue(HabitHue.teal).ink);
@@ -163,20 +163,23 @@ void main() {
 
       expectRgb(tone.tint, 0xD9614C);
       expect(tone.tint.a, closeTo(.15, .005));
-      expect(tone.ink, terra);
+      expect(tone.ink, terracotta);
     });
 
-    test('light red hue stays close to the design system values for terra', () {
-      final tone = light.hue(HabitHue.red);
+    test(
+      'light red hue stays close to the design system values for terracotta',
+      () {
+        final tone = light.hue(HabitHue.red);
 
-      expectRgb(tone.tint, 0xF6D6C1, tolerance: .06);
-      expectRgb(tone.ink, 0xC0562B, tolerance: .1);
-    });
+        expectRgb(tone.tint, 0xF6D6C1, tolerance: .06);
+        expectRgb(tone.ink, 0xC0562B, tolerance: .1);
+      },
+    );
 
     test('red hue follows the accent', () {
-      final salvia = AppColors.dark(Palettes.accent(AccentKey.salvia));
+      final sage = AppColors.dark(Palettes.accent(AccentKey.sage));
 
-      expect(salvia.hue(HabitHue.red).ink, Palettes.accent(AccentKey.salvia));
+      expect(sage.hue(HabitHue.red).ink, Palettes.accent(AccentKey.sage));
     });
   });
 

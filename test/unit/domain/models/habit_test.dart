@@ -6,7 +6,7 @@ Habit makeHabit() => Habit(
   id: 'b1',
   name: 'Read',
   icon: 'book',
-  difficulty: Difficulty.media,
+  difficulty: Difficulty.medium,
   frequency: Frequency.daily,
   hue: HabitHue.teal,
   streak: 0,
@@ -25,9 +25,9 @@ void main() {
     test('derives exp from its difficulty', () {
       final habit = makeHabit();
 
-      expect(habit.copyWith(difficulty: Difficulty.facile).exp, 10);
-      expect(habit.copyWith(difficulty: Difficulty.media).exp, 20);
-      expect(habit.copyWith(difficulty: Difficulty.difficile).exp, 40);
+      expect(habit.copyWith(difficulty: Difficulty.easy).exp, 10);
+      expect(habit.copyWith(difficulty: Difficulty.medium).exp, 20);
+      expect(habit.copyWith(difficulty: Difficulty.hard).exp, 40);
     });
 
     test('copyWith replaces every field', () {
@@ -35,7 +35,7 @@ void main() {
         id: 'b2',
         name: 'Run',
         icon: 'shoe',
-        difficulty: Difficulty.difficile,
+        difficulty: Difficulty.hard,
         frequency: Frequency.x3,
         hue: HabitHue.gold,
         streak: 4,
@@ -52,7 +52,7 @@ void main() {
           id: 'b2',
           name: 'Run',
           icon: 'shoe',
-          difficulty: Difficulty.difficile,
+          difficulty: Difficulty.hard,
           frequency: Frequency.x3,
           hue: HabitHue.gold,
           streak: 4,
@@ -84,7 +84,7 @@ void main() {
         habit.copyWith(id: 'x'),
         habit.copyWith(name: 'x'),
         habit.copyWith(icon: 'x'),
-        habit.copyWith(difficulty: Difficulty.facile),
+        habit.copyWith(difficulty: Difficulty.easy),
         habit.copyWith(frequency: Frequency.x2),
         habit.copyWith(hue: HabitHue.blue),
         habit.copyWith(streak: 1),

@@ -5,7 +5,7 @@ import 'package:levelup/domain/models.dart';
 GameHero makeHero() => const GameHero(
   id: 'h1',
   avatarMode: AvatarMode.initial,
-  accent: AccentKey.terra,
+  accent: AccentKey.terracotta,
   level: 1,
   exp: 0,
   rewardPoints: 0,
@@ -42,8 +42,8 @@ void main() {
         name: 'Ada',
         avatarMode: AvatarMode.icon,
         avatarIcon: 'star',
-        accent: AccentKey.rosa,
-        heroClass: HeroClass.monaco,
+        accent: AccentKey.rose,
+        heroClass: HeroClass.monk,
         level: 4,
         exp: 30,
         rewardPoints: 15,
@@ -58,8 +58,8 @@ void main() {
           name: 'Ada',
           avatarMode: AvatarMode.icon,
           avatarIcon: 'star',
-          accent: AccentKey.rosa,
-          heroClass: HeroClass.monaco,
+          accent: AccentKey.rose,
+          heroClass: HeroClass.monk,
           level: 4,
           exp: 30,
           rewardPoints: 15,
@@ -69,24 +69,18 @@ void main() {
     });
 
     test('copyWith without arguments keeps every field', () {
-      final hero = makeHero().copyWith(
-        name: 'Ada',
-        heroClass: HeroClass.monaco,
-      );
+      final hero = makeHero().copyWith(name: 'Ada', heroClass: HeroClass.monk);
 
       expect(hero.copyWith(), hero);
     });
 
     test('copyWith cannot reset a nullable field back to null', () {
-      final hero = makeHero().copyWith(
-        name: 'Ada',
-        heroClass: HeroClass.monaco,
-      );
+      final hero = makeHero().copyWith(name: 'Ada', heroClass: HeroClass.monk);
 
       final copy = hero.copyWith(name: null, heroClass: null);
 
       expect(copy.name, 'Ada');
-      expect(copy.heroClass, HeroClass.monaco);
+      expect(copy.heroClass, HeroClass.monk);
     });
 
     test('has value equality and a matching hashCode', () {
@@ -102,8 +96,8 @@ void main() {
         hero.copyWith(name: 'x'),
         hero.copyWith(avatarMode: AvatarMode.icon),
         hero.copyWith(avatarIcon: 'x'),
-        hero.copyWith(accent: AccentKey.rosa),
-        hero.copyWith(heroClass: HeroClass.monaco),
+        hero.copyWith(accent: AccentKey.rose),
+        hero.copyWith(heroClass: HeroClass.monk),
         hero.copyWith(level: 2),
         hero.copyWith(exp: 1),
         hero.copyWith(rewardPoints: 1),

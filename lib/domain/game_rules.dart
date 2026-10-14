@@ -169,10 +169,6 @@ RedeemResult redeem({
   );
 }
 
-/// Levels the hero must gain to afford a reward of [cost] points.
-int levelsNeededFor(int cost, {GameConfig config = GameConfig.standard}) =>
-    (cost + config.rpPerLevel - 1) ~/ config.rpPerLevel;
-
 /// Share of today's due habits already done, from 0 to 1 (1 if none are due).
 double questPct({required int done, required int due}) =>
     due == 0 ? 1.0 : done / due;

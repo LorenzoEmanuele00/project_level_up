@@ -89,9 +89,9 @@ void main() {
   group('complete', () {
     test('grants exp by difficulty', () {
       for (final (difficulty, exp) in [
-        (Difficulty.facile, 10),
-        (Difficulty.media, 20),
-        (Difficulty.difficile, 40),
+        (Difficulty.easy, 10),
+        (Difficulty.medium, 20),
+        (Difficulty.hard, 40),
       ]) {
         final done = _complete(habit: habitFixture(difficulty: difficulty));
 
@@ -103,7 +103,7 @@ void main() {
     test('levels up when exp reaches exactly expPerLevel', () {
       final done = _complete(
         hero: heroFixture(exp: 60),
-        habit: habitFixture(difficulty: Difficulty.difficile),
+        habit: habitFixture(difficulty: Difficulty.hard),
       );
 
       expect(done.hero.level, 2);
@@ -115,7 +115,7 @@ void main() {
       const config = GameConfig(expPerLevel: 20);
       final done = _complete(
         hero: heroFixture(exp: 14),
-        habit: habitFixture(difficulty: Difficulty.difficile),
+        habit: habitFixture(difficulty: Difficulty.hard),
         config: config,
       );
 
@@ -198,7 +198,7 @@ void main() {
 
     test('records a completion with id, habit, time and exp', () {
       final done = _complete(
-        habit: habitFixture(id: 'h-9', difficulty: Difficulty.facile),
+        habit: habitFixture(id: 'h-9', difficulty: Difficulty.easy),
       );
 
       expect(
@@ -607,20 +607,20 @@ void main() {
     );
 
     test('pays exactly the cost and leaves 0 points', () {
-      final result = redeemWith(25, RewardTier.media);
+      final result = redeemWith(25, RewardTier.medium);
 
       expect(result, isA<Redeemed>());
       expect((result as Redeemed).hero.rewardPoints, 0);
     });
 
     test('keeps the excess points', () {
-      final result = redeemWith(70, RewardTier.grande) as Redeemed;
+      final result = redeemWith(70, RewardTier.large) as Redeemed;
 
       expect(result.hero.rewardPoints, 10);
     });
 
     test('records a redemption snapshot with the hero level', () {
-      final result = redeemWith(12, RewardTier.piccola, level: 7) as Redeemed;
+      final result = redeemWith(12, RewardTier.small, level: 7) as Redeemed;
 
       expect(
         result.redemption,
@@ -639,7 +639,7 @@ void main() {
 
       final result = redeem(
         hero: hero,
-        reward: const Reward(id: 'r', name: 'n', tier: RewardTier.media),
+        reward: const Reward(id: 'r', name: 'n', tier: RewardTier.medium),
         redemptionId: 'x',
         at: at,
       );
@@ -648,42 +648,22 @@ void main() {
     });
 
     test('reports the missing points when short', () {
-      final result = redeemWith(4, RewardTier.piccola);
+      final result = redeemWith(4, RewardTier.small);
 
       expect(result, isA<InsufficientPoints>());
       expect((result as InsufficientPoints).missing, 6);
     });
 
     test('reports the full cost when the hero has no points', () {
-      final result = redeemWith(0, RewardTier.grande) as InsufficientPoints;
+      final result = redeemWith(0, RewardTier.large) as InsufficientPoints;
 
       expect(result.missing, 60);
     });
 
     test('reports a single missing point', () {
-      final result = redeemWith(59, RewardTier.grande) as InsufficientPoints;
+      final result = redeemWith(59, RewardTier.large) as InsufficientPoints;
 
       expect(result.missing, 1);
-    });
-  });
-
-  group('levelsNeededFor', () {
-    test('divides the cost by 5 rp per level, rounding up', () {
-      expect(levelsNeededFor(10), 2);
-      expect(levelsNeededFor(25), 5);
-      expect(levelsNeededFor(60), 12);
-    });
-
-    test('rounds up with 3 rp per level', () {
-      const config = GameConfig(rpPerLevel: 3);
-
-      expect(levelsNeededFor(10, config: config), 4);
-      expect(levelsNeededFor(25, config: config), 9);
-      expect(levelsNeededFor(60, config: config), 20);
-    });
-
-    test('is 0 for a free reward', () {
-      expect(levelsNeededFor(0), 0);
     });
   });
 

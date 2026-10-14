@@ -5,16 +5,16 @@ void main() {
   group('Difficulty', () {
     test('lists easy, medium, hard in order', () {
       expect(Difficulty.values, [
-        Difficulty.facile,
-        Difficulty.media,
-        Difficulty.difficile,
+        Difficulty.easy,
+        Difficulty.medium,
+        Difficulty.hard,
       ]);
     });
 
     test('gives a fixed exp per completion', () {
-      expect(Difficulty.facile.exp, 10);
-      expect(Difficulty.media.exp, 20);
-      expect(Difficulty.difficile.exp, 40);
+      expect(Difficulty.easy.exp, 10);
+      expect(Difficulty.medium.exp, 20);
+      expect(Difficulty.hard.exp, 40);
     });
   });
 
@@ -38,20 +38,20 @@ void main() {
 
   group('RewardTier', () {
     test('costs 10, 25 and 60 reward points', () {
-      expect(RewardTier.piccola.cost, 10);
-      expect(RewardTier.media.cost, 25);
-      expect(RewardTier.grande.cost, 60);
+      expect(RewardTier.small.cost, 10);
+      expect(RewardTier.medium.cost, 25);
+      expect(RewardTier.large.cost, 60);
     });
   });
 
   group('plain enums', () {
     test('HeroClass lists the five classes', () {
       expect(HeroClass.values, [
-        HeroClass.guerriero,
-        HeroClass.studioso,
-        HeroClass.monaco,
-        HeroClass.creatore,
-        HeroClass.esploratore,
+        HeroClass.warrior,
+        HeroClass.scholar,
+        HeroClass.monk,
+        HeroClass.creator,
+        HeroClass.explorer,
       ]);
     });
 
