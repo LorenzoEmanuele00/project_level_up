@@ -2,22 +2,23 @@ import 'package:levelup/domain/calendar.dart';
 import 'package:levelup/domain/enums.dart';
 import 'package:levelup/domain/models.dart';
 
-/// Whether [habit] was already completed on the local day of [day].
+/// Whether [habit] has a completion on the local day of [day].
 ///
-/// Only valid for today: [Habit.lastCompletedAt] remembers just the latest
-/// completion, so a past day cannot be answered from it.
-bool isDoneOn(Habit habit, DateTime day) {
-  final last = habit.lastCompletedAt;
-  return last != null && isSameLocalDay(last, day);
-}
+/// Valid for any day, as long as [completions] include that day.
+bool isDoneOn(Habit habit, DateTime day, Iterable<Completion> completions) =>
+    completions.any((c) => c.habitId == habit.id && isSameLocalDay(c.at, day));
 
 /// Completions expected for [habit] in the week containing [weekStart].
 ///
+/// The quota follows [frequency], which defaults to the habit's current one.
+/// A week that is already closed must be judged with the frequency its
+/// completions were made with, so callers pass that one.
+///
 /// In the week the habit was created, an xN habit cannot ask for more days
 /// than are left from the creation day to Sunday (inclusive).
-int effectiveQuota(Habit habit, DateTime weekStart) {
+int effectiveQuota(Habit habit, DateTime weekStart, {Frequency? frequency}) {
   final week = startOfWeek(weekStart);
-  final quota = habit.frequency.weeklyQuota;
+  final quota = (frequency ?? habit.frequency).weeklyQuota;
   if (startOfWeek(habit.createdAt) != week) return quota;
 
   final sunday = addLocalDays(week, DateTime.daysPerWeek - 1);

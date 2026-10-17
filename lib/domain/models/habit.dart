@@ -2,8 +2,8 @@ import 'package:levelup/domain/enums.dart';
 
 /// A habit the user wants to repeat.
 ///
-/// Immutable. [copyWith] uses `??`, so it can change [lastCompletedAt] but
-/// never reset it back to null.
+/// Immutable. When it was last completed is not stored here: it comes from
+/// the recorded completions.
 class Habit {
   const Habit({
     required this.id,
@@ -17,7 +17,6 @@ class Habit {
     required this.totalCompletions,
     required this.archived,
     required this.createdAt,
-    this.lastCompletedAt,
   });
 
   final String id;
@@ -29,7 +28,6 @@ class Habit {
   final int streak;
   final int bestStreak;
   final int totalCompletions;
-  final DateTime? lastCompletedAt;
   final bool archived;
 
   /// When the habit was created. Drives the partial first week quota.
@@ -48,7 +46,6 @@ class Habit {
     int? streak,
     int? bestStreak,
     int? totalCompletions,
-    DateTime? lastCompletedAt,
     bool? archived,
     DateTime? createdAt,
   }) => Habit(
@@ -61,7 +58,6 @@ class Habit {
     streak: streak ?? this.streak,
     bestStreak: bestStreak ?? this.bestStreak,
     totalCompletions: totalCompletions ?? this.totalCompletions,
-    lastCompletedAt: lastCompletedAt ?? this.lastCompletedAt,
     archived: archived ?? this.archived,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -78,7 +74,6 @@ class Habit {
       other.streak == streak &&
       other.bestStreak == bestStreak &&
       other.totalCompletions == totalCompletions &&
-      other.lastCompletedAt == lastCompletedAt &&
       other.archived == archived &&
       other.createdAt == createdAt;
 
@@ -93,7 +88,6 @@ class Habit {
     streak,
     bestStreak,
     totalCompletions,
-    lastCompletedAt,
     archived,
     createdAt,
   );

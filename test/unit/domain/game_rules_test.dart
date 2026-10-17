@@ -11,6 +11,10 @@ import 'support/fixtures.dart';
 // A Wednesday.
 final _now = DateTime(2026, 5, 13, 10);
 
+// A completion of the default habit at [at], made with [frequency].
+Completion _done(DateTime at, [Frequency frequency = Frequency.daily]) =>
+    completionFixture(at, frequency: frequency);
+
 Completed _complete({
   GameHero? hero,
   Habit? habit,
@@ -155,29 +159,20 @@ void main() {
       expect(feedback.rpGained, 5);
     });
 
-    test('increments streak and total completions and stamps the time', () {
-      final yesterday = DateTime(2026, 5, 12, 9);
+    test('increments streak and total completions', () {
       final done = _complete(
-        habit: habitFixture(
-          streak: 3,
-          bestStreak: 3,
-          totalCompletions: 7,
-          lastCompletedAt: yesterday,
-        ),
+        habit: habitFixture(streak: 3, bestStreak: 3, totalCompletions: 7),
+        weekCompletions: [completionFixture(DateTime(2026, 5, 12, 9))],
       );
 
       expect(done.habit.streak, 4);
       expect(done.habit.totalCompletions, 8);
-      expect(done.habit.lastCompletedAt, _now);
     });
 
     test('raises bestStreak when the streak passes it', () {
       final done = _complete(
-        habit: habitFixture(
-          streak: 3,
-          bestStreak: 3,
-          lastCompletedAt: DateTime(2026, 5, 12),
-        ),
+        habit: habitFixture(streak: 3, bestStreak: 3),
+        weekCompletions: [completionFixture(DateTime(2026, 5, 12))],
       );
 
       expect(done.habit.bestStreak, 4);
@@ -185,40 +180,61 @@ void main() {
 
     test('keeps bestStreak when it is already higher', () {
       final done = _complete(
-        habit: habitFixture(
-          streak: 3,
-          bestStreak: 10,
-          lastCompletedAt: DateTime(2026, 5, 12),
-        ),
+        habit: habitFixture(streak: 3, bestStreak: 10),
+        weekCompletions: [completionFixture(DateTime(2026, 5, 12))],
       );
 
       expect(done.habit.streak, 4);
       expect(done.habit.bestStreak, 10);
     });
 
-    test('records a completion with id, habit, time and exp', () {
+    test('records a completion with id, habit, time, exp and frequency', () {
       final done = _complete(
-        habit: habitFixture(id: 'h-9', difficulty: Difficulty.easy),
+        habit: habitFixture(
+          id: 'h-9',
+          difficulty: Difficulty.easy,
+          frequency: Frequency.x3,
+        ),
       );
 
       expect(
         done.completion,
-        Completion(id: 'new-completion', habitId: 'h-9', at: _now, exp: 10),
+        Completion(
+          id: 'new-completion',
+          habitId: 'h-9',
+          at: _now,
+          exp: 10,
+          frequency: Frequency.x3,
+        ),
       );
     });
 
-    test('does nothing when already done earlier today', () {
-      final habit = habitFixture(lastCompletedAt: DateTime(2026, 5, 13, 0, 5));
+    test('stamps the completion with the frequency at that moment', () {
+      for (final frequency in Frequency.values) {
+        final done = _complete(habit: habitFixture(frequency: frequency));
 
+        expect(done.completion.frequency, frequency);
+      }
+    });
+
+    test('does nothing when already done earlier today', () {
       final result = complete(
         hero: heroFixture(),
-        habit: habit,
+        habit: habitFixture(),
         now: _now,
         completionId: 'x',
-        weekCompletions: const [],
+        weekCompletions: [completionFixture(DateTime(2026, 5, 13, 0, 5))],
       );
 
       expect(result, isA<AlreadyDoneToday>());
+    });
+
+    test('is not blocked by a completion of another habit today', () {
+      final done = _complete(
+        weekCompletions: [completionFixture(_now, habitId: 'other')],
+      );
+
+      expect(done.habit.totalCompletions, 1);
     });
 
     test('does nothing for an archived habit', () {
@@ -236,10 +252,10 @@ void main() {
     test('reports archived before already done', () {
       final result = complete(
         hero: heroFixture(),
-        habit: habitFixture(archived: true, lastCompletedAt: _now),
+        habit: habitFixture(archived: true),
         now: _now,
         completionId: 'x',
-        weekCompletions: const [],
+        weekCompletions: [completionFixture(_now)],
       );
 
       expect(result, isA<HabitArchived>());
@@ -277,7 +293,6 @@ void main() {
   group('refreshStreak', () {
     Habit streaking({
       Frequency frequency = Frequency.daily,
-      required DateTime last,
       int streak = 5,
       int bestStreak = 9,
       DateTime? createdAt,
@@ -285,207 +300,173 @@ void main() {
       frequency: frequency,
       streak: streak,
       bestStreak: bestStreak,
-      lastCompletedAt: last,
       createdAt: createdAt,
     );
 
-    test('leaves a habit that was never completed untouched', () {
+    Habit refresh(
+      Habit habit,
+      DateTime today,
+      Iterable<Completion> completions,
+    ) => refreshStreak(habit, today: today, completions: completions);
+
+    test('leaves a habit with no streak untouched', () {
       final habit = habitFixture();
 
-      expect(refreshStreak(habit, today: _now, completions: const []), habit);
+      expect(refresh(habit, _now, const []), habit);
+    });
+
+    test('resets a live streak when no completion is in the window', () {
+      final habit = streaking();
+
+      expect(refresh(habit, _now, const []).streak, 0);
+    });
+
+    test('ignores the completions of other habits to find the last', () {
+      final habit = streaking();
+      final others = [completionFixture(_now, habitId: 'other')];
+
+      expect(refresh(habit, _now, others).streak, 0);
+    });
+
+    test('takes the latest completion whatever the order of the list', () {
+      final habit = streaking();
+      final unordered = [
+        _done(DateTime(2026, 5, 12, 9)),
+        _done(DateTime(2026, 5, 9, 9)),
+        _done(DateTime(2026, 5, 11, 9)),
+      ];
+
+      expect(refresh(habit, _now, unordered), habit);
     });
 
     test('daily keeps the streak when completed yesterday', () {
-      final habit = streaking(last: DateTime(2026, 5, 12, 0, 5));
+      final habit = streaking();
 
-      final result = refreshStreak(habit, today: _now, completions: const []);
+      final result = refresh(habit, _now, [_done(DateTime(2026, 5, 12, 0, 5))]);
 
       expect(result, habit);
     });
 
     test('daily keeps the streak when completed today', () {
-      final habit = streaking(last: DateTime(2026, 5, 13, 8));
+      final habit = streaking();
 
-      expect(refreshStreak(habit, today: _now, completions: const []), habit);
+      expect(refresh(habit, _now, [_done(DateTime(2026, 5, 13, 8))]), habit);
     });
 
     test('daily resets after skipping a whole day', () {
-      final habit = streaking(last: DateTime(2026, 5, 11, 23, 59));
+      final habit = streaking();
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 13, 0, 1),
-        completions: const [],
-      );
+      final result = refresh(habit, DateTime(2026, 5, 13, 0, 1), [
+        _done(DateTime(2026, 5, 11, 23, 59)),
+      ]);
 
       expect(result.streak, 0);
     });
 
     test('never touches bestStreak or the other fields', () {
-      final habit = streaking(last: DateTime(2026, 5, 1));
+      final habit = streaking();
 
-      final result = refreshStreak(habit, today: _now, completions: const []);
+      final result = refresh(habit, _now, [_done(DateTime(2026, 5, 1))]);
 
       expect(result, habit.copyWith(streak: 0));
       expect(result.bestStreak, 9);
-      expect(result.lastCompletedAt, DateTime(2026, 5, 1));
     });
 
     test('is idempotent', () {
-      final habit = streaking(last: DateTime(2026, 5, 1));
+      final habit = streaking();
+      final window = [_done(DateTime(2026, 5, 1))];
 
-      final once = refreshStreak(habit, today: _now, completions: const []);
-      final twice = refreshStreak(once, today: _now, completions: const []);
+      final once = refresh(habit, _now, window);
+      final twice = refresh(once, _now, window);
 
       expect(twice, once);
     });
 
     test('daily across the spring DST change keeps a consecutive streak', () {
-      final habit = streaking(last: DateTime(2026, 3, 28, 23, 30));
+      final habit = streaking();
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 3, 29, 0, 30),
-        completions: const [],
-      );
+      final result = refresh(habit, DateTime(2026, 3, 29, 0, 30), [
+        _done(DateTime(2026, 3, 28, 23, 30)),
+      ]);
 
       expect(result.streak, 5);
     });
 
     test('daily across the DST changes resets only after a skipped day', () {
-      final spring = streaking(last: DateTime(2026, 3, 28, 23, 30));
-      final autumn = streaking(last: DateTime(2026, 10, 24, 23, 30));
+      final habit = streaking();
+      final spring = [_done(DateTime(2026, 3, 28, 23, 30))];
+      final autumn = [_done(DateTime(2026, 10, 24, 23, 30))];
 
-      expect(
-        refreshStreak(
-          spring,
-          today: DateTime(2026, 3, 30, 0, 30),
-          completions: const [],
-        ).streak,
-        0,
-      );
-      expect(
-        refreshStreak(
-          autumn,
-          today: DateTime(2026, 10, 25, 23, 30),
-          completions: const [],
-        ).streak,
-        5,
-      );
-      expect(
-        refreshStreak(
-          autumn,
-          today: DateTime(2026, 10, 26, 0, 30),
-          completions: const [],
-        ).streak,
-        0,
-      );
+      expect(refresh(habit, DateTime(2026, 3, 30, 0, 30), spring).streak, 0);
+      expect(refresh(habit, DateTime(2026, 10, 25, 23, 30), autumn).streak, 5);
+      expect(refresh(habit, DateTime(2026, 10, 26, 0, 30), autumn).streak, 0);
     });
 
     test('xN keeps the streak while still in the same week', () {
-      final habit = streaking(
-        frequency: Frequency.x3,
-        last: DateTime(2026, 5, 11, 9),
-      );
+      final habit = streaking(frequency: Frequency.x3);
 
-      expect(
-        refreshStreak(
-          habit,
-          today: DateTime(2026, 5, 17, 22),
-          completions: const [],
-        ),
-        habit,
-      );
+      final result = refresh(habit, DateTime(2026, 5, 17, 22), [
+        _done(DateTime(2026, 5, 11, 9), Frequency.x3),
+      ]);
+
+      expect(result, habit);
     });
 
     test('xN keeps the streak if last week met the quota', () {
-      final habit = streaking(
-        frequency: Frequency.x2,
-        last: DateTime(2026, 5, 7, 9),
-      );
-      final lastWeek = [
-        completionFixture(DateTime(2026, 5, 5, 9)),
-        completionFixture(DateTime(2026, 5, 7, 9)),
-      ];
+      final habit = streaking(frequency: Frequency.x2);
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 13),
-        completions: lastWeek,
-      );
+      final result = refresh(habit, DateTime(2026, 5, 13), [
+        _done(DateTime(2026, 5, 5, 9), Frequency.x2),
+        _done(DateTime(2026, 5, 7, 9), Frequency.x2),
+      ]);
 
       expect(result, habit);
     });
 
     test('xN resets if last week fell short of the quota', () {
-      final habit = streaking(
-        frequency: Frequency.x3,
-        last: DateTime(2026, 5, 7, 9),
-      );
-      final lastWeek = [
-        completionFixture(DateTime(2026, 5, 5, 9)),
-        completionFixture(DateTime(2026, 5, 7, 9)),
-      ];
+      final habit = streaking(frequency: Frequency.x3);
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 13),
-        completions: lastWeek,
-      );
+      final result = refresh(habit, DateTime(2026, 5, 13), [
+        _done(DateTime(2026, 5, 5, 9), Frequency.x3),
+        _done(DateTime(2026, 5, 7, 9), Frequency.x3),
+      ]);
 
       expect(result.streak, 0);
     });
 
     test('xN keeps the streak when today is before the last completion', () {
       // Clock or time-zone change: "today" falls in the week before `last`.
-      final habit = streaking(
-        frequency: Frequency.x3,
-        last: DateTime(2026, 5, 13, 9),
-      );
+      final habit = streaking(frequency: Frequency.x3);
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 6),
-        completions: const [],
-      );
+      final result = refresh(habit, DateTime(2026, 5, 6), [
+        _done(DateTime(2026, 5, 13, 9), Frequency.x3),
+      ]);
 
       expect(result, habit);
     });
 
     test('xN counts only completions of the same habit', () {
-      final habit = streaking(
-        frequency: Frequency.x2,
-        last: DateTime(2026, 5, 7, 9),
-      );
-      final lastWeek = [
-        completionFixture(DateTime(2026, 5, 7, 9)),
-        completionFixture(DateTime(2026, 5, 6, 9), habitId: 'other'),
-      ];
+      final habit = streaking(frequency: Frequency.x2);
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 13),
-        completions: lastWeek,
-      );
+      final result = refresh(habit, DateTime(2026, 5, 13), [
+        _done(DateTime(2026, 5, 7, 9), Frequency.x2),
+        completionFixture(
+          DateTime(2026, 5, 6, 9),
+          habitId: 'other',
+          frequency: Frequency.x2,
+        ),
+      ]);
 
       expect(result.streak, 0);
     });
 
     test('xN resets when the last completion is older than last week', () {
-      final habit = streaking(
-        frequency: Frequency.x2,
-        last: DateTime(2026, 4, 30, 9),
-      );
-      final old = [
-        completionFixture(DateTime(2026, 4, 28, 9)),
-        completionFixture(DateTime(2026, 4, 30, 9)),
-      ];
+      final habit = streaking(frequency: Frequency.x2);
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 13),
-        completions: old,
-      );
+      final result = refresh(habit, DateTime(2026, 5, 13), [
+        _done(DateTime(2026, 4, 28, 9), Frequency.x2),
+        _done(DateTime(2026, 4, 30, 9), Frequency.x2),
+      ]);
 
       expect(result.streak, 0);
     });
@@ -493,52 +474,155 @@ void main() {
     test('xN does not penalise a partial first week', () {
       final habit = streaking(
         frequency: Frequency.x5,
-        last: DateTime(2026, 5, 16, 9),
         createdAt: DateTime(2026, 5, 14),
       );
-      final firstWeek = [
-        for (final day in [14, 15, 16, 17])
-          completionFixture(DateTime(2026, 5, day, 9)),
-      ];
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 5, 20),
-        completions: firstWeek,
-      );
+      final result = refresh(habit, DateTime(2026, 5, 20), [
+        for (final day in [14, 15, 16, 17])
+          _done(DateTime(2026, 5, day, 9), Frequency.x5),
+      ]);
 
       expect(result, habit);
     });
 
-    test('xN across the week of a DST change is judged by calendar week', () {
-      final habit = streaking(
-        frequency: Frequency.x2,
-        last: DateTime(2026, 3, 29, 12),
-      );
-      final week = [
-        completionFixture(DateTime(2026, 3, 23, 9)),
-        completionFixture(DateTime(2026, 3, 29, 12)),
-      ];
+    test('xN across the week of the spring DST change uses calendar weeks', () {
+      final habit = streaking(frequency: Frequency.x2);
 
-      final result = refreshStreak(
-        habit,
-        today: DateTime(2026, 3, 30, 0, 10),
-        completions: week,
-      );
+      final result = refresh(habit, DateTime(2026, 3, 30, 0, 10), [
+        _done(DateTime(2026, 3, 23, 9), Frequency.x2),
+        _done(DateTime(2026, 3, 29, 12), Frequency.x2),
+      ]);
 
       expect(result, habit);
+    });
+
+    test('xN across the week of the autumn DST change uses calendar weeks', () {
+      final habit = streaking(frequency: Frequency.x2);
+      final week = [
+        _done(DateTime(2026, 10, 20, 9), Frequency.x2),
+        _done(DateTime(2026, 10, 25, 12), Frequency.x2),
+      ];
+
+      expect(refresh(habit, DateTime(2026, 10, 26, 0, 10), week), habit);
+      expect(refresh(habit, DateTime(2026, 11, 2, 0, 10), week).streak, 0);
+    });
+
+    group('when the frequency changed', () {
+      test('x3 to x5 on Sunday after 3 completions: the week is valid', () {
+        // The three completions were made as x3; the habit is x5 only now.
+        final habit = streaking(frequency: Frequency.x5);
+
+        final result = refresh(habit, DateTime(2026, 5, 13), [
+          for (final day in [5, 6, 7])
+            _done(DateTime(2026, 5, day, 9), Frequency.x3),
+        ]);
+
+        expect(result, habit);
+      });
+
+      test('x3 to x5 on Tuesday, 3 completions Wed-Fri: the week failed', () {
+        final habit = streaking(frequency: Frequency.x5);
+
+        final result = refresh(habit, DateTime(2026, 5, 13), [
+          for (final day in [6, 7, 8])
+            _done(DateTime(2026, 5, day, 9), Frequency.x5),
+        ]);
+
+        expect(result.streak, 0);
+      });
+
+      test('x5 to x2 after the week: it is judged as x5, not as x2', () {
+        final habit = streaking(frequency: Frequency.x2);
+
+        final result = refresh(habit, DateTime(2026, 5, 13), [
+          for (final day in [5, 6, 7])
+            _done(DateTime(2026, 5, day, 9), Frequency.x5),
+        ]);
+
+        expect(result.streak, 0);
+      });
+
+      test('mixed week: the frequency of the latest completion wins (met)', () {
+        final habit = streaking(frequency: Frequency.x2);
+
+        final result = refresh(habit, DateTime(2026, 5, 13), [
+          _done(DateTime(2026, 5, 6, 9), Frequency.x2),
+          _done(DateTime(2026, 5, 4, 9), Frequency.x5),
+          _done(DateTime(2026, 5, 5, 9), Frequency.x5),
+        ]);
+
+        expect(result, habit);
+      });
+
+      test(
+        'mixed week: the frequency of the latest completion wins (fail)',
+        () {
+          final habit = streaking(frequency: Frequency.x5);
+
+          final result = refresh(habit, DateTime(2026, 5, 13), [
+            _done(DateTime(2026, 5, 6, 9), Frequency.x5),
+            _done(DateTime(2026, 5, 4, 9), Frequency.x2),
+            _done(DateTime(2026, 5, 5, 9), Frequency.x2),
+          ]);
+
+          expect(result.streak, 0);
+        },
+      );
+
+      test(
+        'the partial first week cap applies to the completion frequency',
+        () {
+          final habit = streaking(
+            frequency: Frequency.x2,
+            createdAt: DateTime(2026, 5, 15),
+          );
+
+          final result = refresh(habit, DateTime(2026, 5, 20), [
+            for (final day in [15, 16, 17])
+              _done(DateTime(2026, 5, day, 9), Frequency.x5),
+          ]);
+
+          expect(result, habit);
+        },
+      );
+
+      test('follows the frequency of the last completion, not the habit', () {
+        // Now daily, but the last completion was x3: the week-based rule runs.
+        final habit = streaking();
+
+        final result = refresh(habit, DateTime(2026, 5, 13), [
+          for (final day in [5, 6, 7])
+            _done(DateTime(2026, 5, day, 9), Frequency.x3),
+        ]);
+
+        expect(result, habit);
+      });
+
+      test('a habit now xN but last completed daily resets after a gap', () {
+        final habit = streaking(frequency: Frequency.x3);
+
+        final result = refresh(habit, DateTime(2026, 5, 13), [
+          _done(DateTime(2026, 5, 10, 9)),
+        ]);
+
+        expect(result.streak, 0);
+      });
     });
   });
 
   group('complete with a stale streak', () {
     test('daily restarts at 1 instead of old + 1', () {
       final done = _complete(
-        habit: habitFixture(
-          streak: 7,
-          bestStreak: 7,
-          lastCompletedAt: DateTime(2026, 5, 10, 9),
-        ),
+        habit: habitFixture(streak: 7, bestStreak: 7),
+        weekCompletions: [_done(DateTime(2026, 5, 10, 9))],
       );
+
+      expect(done.habit.streak, 1);
+      expect(done.habit.bestStreak, 7);
+    });
+
+    test('restarts at 1 when the window holds no completion', () {
+      final done = _complete(habit: habitFixture(streak: 7, bestStreak: 7));
 
       expect(done.habit.streak, 1);
       expect(done.habit.bestStreak, 7);
@@ -546,13 +630,8 @@ void main() {
 
     test('xN restarts at 1 after a week below quota', () {
       final done = _complete(
-        habit: habitFixture(
-          frequency: Frequency.x3,
-          streak: 4,
-          bestStreak: 4,
-          lastCompletedAt: DateTime(2026, 5, 6, 9),
-        ),
-        weekCompletions: [completionFixture(DateTime(2026, 5, 6, 9))],
+        habit: habitFixture(frequency: Frequency.x3, streak: 4, bestStreak: 4),
+        weekCompletions: [_done(DateTime(2026, 5, 6, 9), Frequency.x3)],
       );
 
       expect(done.habit.streak, 1);
@@ -560,15 +639,10 @@ void main() {
 
     test('xN continues when the previous week met its quota', () {
       final done = _complete(
-        habit: habitFixture(
-          frequency: Frequency.x2,
-          streak: 4,
-          bestStreak: 4,
-          lastCompletedAt: DateTime(2026, 5, 7, 9),
-        ),
+        habit: habitFixture(frequency: Frequency.x2, streak: 4, bestStreak: 4),
         weekCompletions: [
-          completionFixture(DateTime(2026, 5, 5, 9)),
-          completionFixture(DateTime(2026, 5, 7, 9)),
+          _done(DateTime(2026, 5, 5, 9), Frequency.x2),
+          _done(DateTime(2026, 5, 7, 9), Frequency.x2),
         ],
       );
 
@@ -576,23 +650,29 @@ void main() {
     });
 
     test('xN may be completed beyond the weekly quota', () {
-      final week = [
-        for (final day in [11, 12])
-          completionFixture(DateTime(2026, 5, day, 9)),
-      ];
-
       final done = _complete(
-        habit: habitFixture(
-          frequency: Frequency.x2,
-          streak: 2,
-          bestStreak: 2,
-          lastCompletedAt: DateTime(2026, 5, 12, 9),
-        ),
-        weekCompletions: week,
+        habit: habitFixture(frequency: Frequency.x2, streak: 2, bestStreak: 2),
+        weekCompletions: [
+          for (final day in [11, 12])
+            _done(DateTime(2026, 5, day, 9), Frequency.x2),
+        ],
       );
 
       expect(done.habit.streak, 3);
       expect(done.hero.exp, 20);
+    });
+
+    test('xN keeps the streak after a frequency change on a valid week', () {
+      final done = _complete(
+        habit: habitFixture(frequency: Frequency.x5, streak: 4, bestStreak: 4),
+        weekCompletions: [
+          for (final day in [5, 6, 7])
+            _done(DateTime(2026, 5, day, 9), Frequency.x3),
+        ],
+      );
+
+      expect(done.habit.streak, 5);
+      expect(done.completion.frequency, Frequency.x5);
     });
   });
 
@@ -682,15 +762,11 @@ void main() {
       // x3 habit: Mon and Tue done, completed again on Wed (still due).
       final habit = habitFixture(frequency: Frequency.x3);
       final week = [
-        completionFixture(DateTime(2026, 5, 11, 9)),
-        completionFixture(DateTime(2026, 5, 12, 9)),
-        completionFixture(DateTime(2026, 5, 13, 9)),
+        for (final day in [11, 12, 13])
+          _done(DateTime(2026, 5, day, 9), Frequency.x3),
       ];
-      final doneToday = habit.copyWith(
-        lastCompletedAt: DateTime(2026, 5, 13, 9),
-      );
-      final due = isDueOn(doneToday, DateTime(2026, 5, 13), week) ? 1 : 0;
-      final done = isDoneOn(doneToday, DateTime(2026, 5, 13)) ? 1 : 0;
+      final due = isDueOn(habit, DateTime(2026, 5, 13), week) ? 1 : 0;
+      final done = isDoneOn(habit, DateTime(2026, 5, 13), week) ? 1 : 0;
 
       expect(questPct(done: done, due: due), 1.0);
     });

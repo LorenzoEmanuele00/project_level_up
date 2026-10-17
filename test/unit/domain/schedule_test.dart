@@ -21,21 +21,48 @@ List<Completion> _doneOn(List<DateTime> days, {String habitId = 'habit-1'}) => [
 void main() {
   group('isDoneOn', () {
     test('is false without any completion', () {
-      expect(isDoneOn(habitFixture(), _wednesday), isFalse);
+      expect(isDoneOn(habitFixture(), _wednesday, const []), isFalse);
     });
 
-    test('is true when last completed earlier the same local day', () {
-      final habit = habitFixture(lastCompletedAt: DateTime(2026, 5, 13, 0, 1));
+    test('is true when completed earlier the same local day', () {
+      final done = [completionFixture(DateTime(2026, 5, 13, 0, 1))];
 
-      expect(isDoneOn(habit, DateTime(2026, 5, 13, 23, 59)), isTrue);
-    });
-
-    test('is false when last completed the previous day at 23:59', () {
-      final habit = habitFixture(
-        lastCompletedAt: DateTime(2026, 5, 12, 23, 59),
+      expect(
+        isDoneOn(habitFixture(), DateTime(2026, 5, 13, 23, 59), done),
+        isTrue,
       );
+    });
 
-      expect(isDoneOn(habit, DateTime(2026, 5, 13, 0, 1)), isFalse);
+    test('is false when completed the previous day at 23:59', () {
+      final done = [completionFixture(DateTime(2026, 5, 12, 23, 59))];
+
+      expect(
+        isDoneOn(habitFixture(), DateTime(2026, 5, 13, 0, 1), done),
+        isFalse,
+      );
+    });
+
+    test('answers for a past day, not only for today', () {
+      final done = [
+        completionFixture(DateTime(2026, 5, 11, 9)),
+        completionFixture(DateTime(2026, 5, 13, 9)),
+      ];
+
+      expect(isDoneOn(habitFixture(), _monday, done), isTrue);
+      expect(isDoneOn(habitFixture(), _tuesday, done), isFalse);
+      expect(isDoneOn(habitFixture(), _wednesday, done), isTrue);
+    });
+
+    test('ignores completions of other habits', () {
+      final done = [completionFixture(_wednesday, habitId: 'other')];
+
+      expect(isDoneOn(habitFixture(), _wednesday, done), isFalse);
+    });
+
+    test('accepts a completion stored as a UTC instant', () {
+      final done = [completionFixture(DateTime(2026, 5, 13, 12).toUtc())];
+
+      expect(isDoneOn(habitFixture(), _wednesday, done), isTrue);
     });
   });
 
@@ -91,6 +118,22 @@ void main() {
       );
 
       expect(effectiveQuota(habit, _sunday), 4);
+    });
+
+    test('uses the given frequency instead of the current one', () {
+      final habit = habitFixture(frequency: Frequency.x5);
+
+      expect(effectiveQuota(habit, _monday, frequency: Frequency.x3), 3);
+      expect(effectiveQuota(habit, _monday, frequency: Frequency.daily), 7);
+    });
+
+    test('caps the given frequency in the creation week', () {
+      final habit = habitFixture(
+        frequency: Frequency.x2,
+        createdAt: DateTime(2026, 5, 15),
+      );
+
+      expect(effectiveQuota(habit, _monday, frequency: Frequency.x5), 3);
     });
 
     test('daily habit created on Thursday has 4 days that week', () {

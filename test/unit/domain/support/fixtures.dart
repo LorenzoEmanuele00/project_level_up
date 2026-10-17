@@ -21,7 +21,6 @@ Habit habitFixture({
   int streak = 0,
   int bestStreak = 0,
   int totalCompletions = 0,
-  DateTime? lastCompletedAt,
   bool archived = false,
   DateTime? createdAt,
 }) => Habit(
@@ -34,16 +33,21 @@ Habit habitFixture({
   streak: streak,
   bestStreak: bestStreak,
   totalCompletions: totalCompletions,
-  lastCompletedAt: lastCompletedAt,
   archived: archived,
   createdAt: createdAt ?? DateTime(2026, 1, 1),
 );
 
-/// A completion of [habitId] at [at].
+/// A completion of [habitId] at [at], made while the habit had [frequency].
 Completion completionFixture(
   DateTime at, {
   String habitId = 'habit-1',
   String? id,
   int exp = 20,
-}) =>
-    Completion(id: id ?? 'c-$habitId-$at', habitId: habitId, at: at, exp: exp);
+  Frequency frequency = Frequency.daily,
+}) => Completion(
+  id: id ?? 'c-$habitId-$at',
+  habitId: habitId,
+  at: at,
+  exp: exp,
+  frequency: frequency,
+);

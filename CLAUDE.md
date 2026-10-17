@@ -23,7 +23,15 @@ flutter pub get       # dipendenze
 flutter analyze       # lint statico — deve restare verde
 flutter test          # test — deve restare verde
 flutter gen-l10n      # rigenera lib/l10n dopo aver modificato gli ARB
+dart run build_runner build --delete-conflicting-outputs   # rigenera i *.g.dart di drift dopo aver toccato le tabelle
+dart run drift_dev schema dump lib/data/database/app_database.dart drift_schemas/   # dopo ogni cambio di schema (con bump di schemaVersion)
+dart run drift_dev schema generate drift_schemas/ test/generated_migrations/        # helper per i test di migrazione
+dart format --set-exit-if-changed .   # formatter: deve restare pulito
 ```
+
+(`build_runner` 2.16 ignora `--delete-conflicting-outputs` con un avviso: è il comportamento di default, il flag resta per compatibilità con le versioni precedenti.)
+
+**File generati committati**: `lib/l10n/*` e i `*.g.dart` di drift (`lib/data/database/app_database.g.dart`) stanno in git, così un clone compila senza rigenerare. Dopo aver modificato tabelle o ARB si rigenera e si committa il risultato insieme alla modifica. Anche `drift_schemas/` (uno JSON per versione di schema) e `test/generated_migrations/` sono committati: lo schema esportato non si modifica mai a mano, una versione già rilasciata non si riscrive (si aggiunge `schemaVersion + 1`, il dump e uno step di migrazione con test).
 
 Nessun comando di build/release è ancora definito (si aggiungerà quando serve).
 
@@ -33,13 +41,14 @@ Vedi `docs/design/design.md` §2 per l'albero completo (`app/`, `theme/`, `domai
 - I widget usano solo token di tema (`context.colors.*`, `AppText.*`, `Spacing.*`), mai colori hex.
 - Niente prefisso `Lu`/`lu_` in classi e file (decisione di review PR #2): l'app è `LevelUpApp`, i file in `lib/theme/` sono `colors.dart`, `text.dart`, …; se un nome collide con Flutter si usa uno più specifico (`AppColors`, `AppText`). Gli enum di dominio stanno tutti in `lib/domain/enums.dart`.
 - Il modello dati salva chiavi (`hue`, `icon`, `tier`, `accent`), non colori risolti.
-- `domain/game_rules.dart` è logica pura, senza UI, testabile in isolamento.
+- `domain/game_rules.dart` è logica pura, senza UI, testabile in isolamento. Il dominio non importa drift: la persistenza sta in `lib/data/` (tabelle drift, mapper, `GameRepository` con implementazioni drift e in memoria); i test del repository condividono una suite di contratto (`test/unit/data/game_repository_contract.dart`) che deve passare su entrambe.
 - Nessuna stringa letterale visibile all'utente nei widget: testi in `lib/l10n/app_it.arb` (sorgente) e `app_en.arb`, letti con `context.l10n.*`; si aggiunge una chiave solo quando una schermata la usa (mai a priori); etichette degli enum come estensioni con switch esaustivo in `lib/ui/l10n/`, mai nel dominio, aggiunte insieme alla schermata che le usa, con test di completezza it+en; date/numeri via `intl` con locale esplicito. Il test `no_literal_strings_in_ui_test` lo verifica.
 
 ## TDD e qualità
 
 - Ciclo RED → GREEN → REFACTOR per ogni nuova funzionalità o bug fix.
 - Copertura minima 80%.
+- I test sull'ora legale (DST) hanno bisogno di un fuso con cambio d'ora: girano con `TZ=Europe/Rome flutter test` (meglio per `test/unit/domain`, `test/unit/data`). In un fuso senza ora legale (es. UTC) vengono **saltati** con un messaggio esplicito (`skip: needs a zone with daylight saving`), non passano in silenzio. Prima di una PR lanciare entrambe le varianti.
 - `game_rules.dart` in particolare va coperto con unit test su EXP, multi level up, riscatto reward, medaglie (vedi design.md §4 e §8).
 - `flutter analyze` e `flutter test` verdi prima di proporre un merge in `develop`.
 

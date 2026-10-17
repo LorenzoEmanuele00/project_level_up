@@ -42,12 +42,32 @@ ExpProgress applyExp({
   );
 }
 
+/// Start (inclusive) of the window of completions that [complete] needs for
+/// a completion at [now]: Monday 00:00, local, of the previous week.
+DateTime completionWindowStart(DateTime now) =>
+    addLocalDays(startOfWeek(now), -DateTime.daysPerWeek);
+
+/// End (exclusive) of that window: the end of the local day of [now].
+///
+/// It runs past [now] on purpose: if the clock went back, a completion
+/// already recorded later the same day must still be seen by [isDoneOn].
+DateTime completionWindowEnd(DateTime now) => addLocalDays(localDay(now), 1);
+
 /// Completes [habit] at [now] for [hero].
 ///
 /// Pure: nothing is mutated and the clock and the new [completionId] come in
-/// as parameters. [weekCompletions] are the recorded completions from the
-/// start of the previous week up to [now]: the previous week is needed to
-/// tell whether an xN streak survived it (see [refreshStreak]).
+/// as parameters.
+///
+/// [weekCompletions] is the window of recorded completions of every habit
+/// that this function relies on: from [completionWindowStart] (Monday 00:00,
+/// local, of the week before [now]) to [completionWindowEnd] (the end of the
+/// local day of [now]). It is used to tell whether the habit
+/// was already done today and whether the streak survived (see
+/// [refreshStreak]). A window that is too short makes a live streak look
+/// broken, so the caller must not trim it.
+///
+/// The new [Completion] carries the habit's current frequency: the history
+/// keeps the frequency each week was done with.
 CompletionResult complete({
   required GameHero hero,
   required Habit habit,
@@ -57,7 +77,7 @@ CompletionResult complete({
   GameConfig config = GameConfig.standard,
 }) {
   if (habit.archived) return const HabitArchived();
-  if (isDoneOn(habit, now)) return const AlreadyDoneToday();
+  if (isDoneOn(habit, now, weekCompletions)) return const AlreadyDoneToday();
 
   final fresh = refreshStreak(habit, today: now, completions: weekCompletions);
   final streak = fresh.streak + 1;
@@ -65,7 +85,6 @@ CompletionResult complete({
     streak: streak,
     bestStreak: streak > fresh.bestStreak ? streak : fresh.bestStreak,
     totalCompletions: fresh.totalCompletions + 1,
-    lastCompletedAt: now,
   );
 
   final progress = applyExp(
@@ -88,6 +107,7 @@ CompletionResult complete({
       habitId: habit.id,
       at: now,
       exp: habit.exp,
+      frequency: habit.frequency,
     ),
     feedback: progress.rpGained > 0
         ? LevelledUp(
@@ -101,10 +121,18 @@ CompletionResult complete({
 
 /// Lazily resets a streak that was broken, as of [today].
 ///
-/// Daily habits break when a whole day is skipped. xN habits are judged per
-/// calendar week: the streak survives the week of the last completion, and
-/// the week after only if that week met its [effectiveQuota]; any later it is
-/// broken. [completions] must cover the week of the last completion.
+/// The last completion is the latest one of the habit in [completions]; its
+/// frequency decides how the streak is judged, whatever the habit's current
+/// frequency. Daily completions break the streak when a whole day is skipped.
+/// xN completions are judged per calendar week: the streak survives the week
+/// of the last completion, and the week after only if that week met its
+/// [effectiveQuota] (computed with the frequency of the last completion, the
+/// one in force when that week ended); any later it is broken. A week
+/// without completions counts as failed.
+///
+/// [completions] must cover from the start of the week before [today] up to
+/// [today] (see [complete]). Hence an empty window with a live streak means
+/// the last completion is older than that: the streak is broken.
 ///
 /// Idempotent, and never touches [Habit.bestStreak].
 Habit refreshStreak(
@@ -112,22 +140,32 @@ Habit refreshStreak(
   required DateTime today,
   required Iterable<Completion> completions,
 }) {
-  final last = habit.lastCompletedAt;
-  if (last == null || habit.streak == 0) return habit;
+  if (habit.streak == 0) return habit;
+  final last = _latestCompletion(habit, completions);
+  if (last == null) return habit.copyWith(streak: 0);
 
-  final broken = habit.frequency == Frequency.daily
-      ? localDaysBetween(last, today) > 1
+  final broken = last.frequency == Frequency.daily
+      ? localDaysBetween(last.at, today) > 1
       : _isXnStreakBroken(habit, last, today, completions);
   return broken ? habit.copyWith(streak: 0) : habit;
 }
 
+Completion? _latestCompletion(Habit habit, Iterable<Completion> completions) {
+  Completion? latest;
+  for (final c in completions) {
+    if (c.habitId != habit.id) continue;
+    if (latest == null || c.at.isAfter(latest.at)) latest = c;
+  }
+  return latest;
+}
+
 bool _isXnStreakBroken(
   Habit habit,
-  DateTime last,
+  Completion last,
   DateTime today,
   Iterable<Completion> completions,
 ) {
-  final lastWeek = startOfWeek(last);
+  final lastWeek = startOfWeek(last.at);
   final weeksApart =
       localDaysBetween(lastWeek, startOfWeek(today)) ~/ DateTime.daysPerWeek;
   if (weeksApart <= 0) return false;
@@ -140,7 +178,7 @@ bool _isXnStreakBroken(
         !at.isBefore(lastWeek) &&
         at.isBefore(nextWeek);
   }).length;
-  return done < effectiveQuota(habit, lastWeek);
+  return done < effectiveQuota(habit, lastWeek, frequency: last.frequency);
 }
 
 /// Redeems [reward] for [hero] at [at].
