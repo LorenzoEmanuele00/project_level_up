@@ -85,6 +85,7 @@ Ogni card ha un footer con la **specifica** (misure, stati, regole): è la parte
 lib/
   main.dart
   app/router.dart                 # go_router
+  l10n/                           # ARB (it sorgente, en) + AppLocalizations generato (committato)
   theme/
     tokens.dart                   # Spacing, AppRadius, Shadows, Motion
     colors.dart                   # ThemeExtension<AppColors> light/dark(accent)
@@ -100,6 +101,7 @@ lib/
     atoms/ molecules/ organisms/  # widget (senza prefisso Lu)
     screens/                      # una cartella per vista (§5)
     overlays/                     # feedback overlay + toast
+    l10n/                         # extension context.l10n + etichette enum
 assets/
   fonts/SpaceMono-*.ttf
   icons/*.svg                     # set Streamline (line), scaricati dalla libreria ufficiale

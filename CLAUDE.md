@@ -22,6 +22,7 @@ Dettagli e stato delle dipendenze: nota `Stack Tecnologico` nel vault (link sott
 flutter pub get       # dipendenze
 flutter analyze       # lint statico — deve restare verde
 flutter test          # test — deve restare verde
+flutter gen-l10n      # rigenera lib/l10n dopo aver modificato gli ARB
 ```
 
 Nessun comando di build/release è ancora definito (si aggiungerà quando serve).
@@ -33,6 +34,7 @@ Vedi `docs/design/design.md` §2 per l'albero completo (`app/`, `theme/`, `domai
 - Niente prefisso `Lu`/`lu_` in classi e file (decisione di review PR #2): l'app è `LevelUpApp`, i file in `lib/theme/` sono `colors.dart`, `text.dart`, …; se un nome collide con Flutter si usa uno più specifico (`AppColors`, `AppText`). Gli enum di dominio stanno tutti in `lib/domain/enums.dart`.
 - Il modello dati salva chiavi (`hue`, `icon`, `tier`, `accent`), non colori risolti.
 - `domain/game_rules.dart` è logica pura, senza UI, testabile in isolamento.
+- Nessuna stringa letterale visibile all'utente nei widget: testi in `lib/l10n/app_it.arb` (sorgente) e `app_en.arb`, letti con `context.l10n.*`; si aggiunge una chiave solo quando una schermata la usa (mai a priori); etichette degli enum come estensioni con switch esaustivo in `lib/ui/l10n/`, mai nel dominio, aggiunte insieme alla schermata che le usa, con test di completezza it+en; date/numeri via `intl` con locale esplicito. Il test `no_literal_strings_in_ui_test` lo verifica.
 
 ## TDD e qualità
 

@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "LevelUp",
+  "@appTitle": {
+    "description": "App name, shown as the application title and on the home screen."
+  }
+}
