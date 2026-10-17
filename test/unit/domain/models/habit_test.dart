@@ -18,10 +18,6 @@ Habit makeHabit() => Habit(
 
 void main() {
   group('Habit', () {
-    test('has no last completion by default', () {
-      expect(makeHabit().lastCompletedAt, isNull);
-    });
-
     test('derives exp from its difficulty', () {
       final habit = makeHabit();
 
@@ -41,7 +37,6 @@ void main() {
         streak: 4,
         bestStreak: 9,
         totalCompletions: 20,
-        lastCompletedAt: DateTime(2026, 5, 10, 8),
         archived: true,
         createdAt: DateTime(2026, 4, 1),
       );
@@ -58,19 +53,10 @@ void main() {
           streak: 4,
           bestStreak: 9,
           totalCompletions: 20,
-          lastCompletedAt: DateTime(2026, 5, 10, 8),
           archived: true,
           createdAt: DateTime(2026, 4, 1),
         ),
       );
-    });
-
-    test('copyWith cannot reset lastCompletedAt back to null', () {
-      final habit = makeHabit().copyWith(lastCompletedAt: DateTime(2026, 5, 2));
-
-      final copy = habit.copyWith(lastCompletedAt: null);
-
-      expect(copy.lastCompletedAt, DateTime(2026, 5, 2));
     });
 
     test('has value equality and a matching hashCode', () {
@@ -90,7 +76,6 @@ void main() {
         habit.copyWith(streak: 1),
         habit.copyWith(bestStreak: 1),
         habit.copyWith(totalCompletions: 1),
-        habit.copyWith(lastCompletedAt: DateTime(2026, 5, 2)),
         habit.copyWith(archived: true),
         habit.copyWith(createdAt: DateTime(2026, 5, 2)),
       ];

@@ -1,8 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:levelup/domain/enums.dart';
 import 'package:levelup/domain/models.dart';
 
-Completion makeCompletion() =>
-    Completion(id: 'c1', habitId: 'b1', at: DateTime(2026, 5, 10, 8), exp: 20);
+Completion makeCompletion() => Completion(
+  id: 'c1',
+  habitId: 'b1',
+  at: DateTime(2026, 5, 10, 8),
+  exp: 20,
+  frequency: Frequency.daily,
+);
 
 void main() {
   group('Completion', () {
@@ -12,11 +18,18 @@ void main() {
         habitId: 'b2',
         at: DateTime(2026, 5, 11),
         exp: 40,
+        frequency: Frequency.x3,
       );
 
       expect(
         copy,
-        Completion(id: 'c2', habitId: 'b2', at: DateTime(2026, 5, 11), exp: 40),
+        Completion(
+          id: 'c2',
+          habitId: 'b2',
+          at: DateTime(2026, 5, 11),
+          exp: 40,
+          frequency: Frequency.x3,
+        ),
       );
     });
 
@@ -32,6 +45,7 @@ void main() {
         completion.copyWith(habitId: 'x'),
         completion.copyWith(at: DateTime(2026, 1, 1)),
         completion.copyWith(exp: 1),
+        completion.copyWith(frequency: Frequency.x2),
       ];
 
       for (final variant in variants) {

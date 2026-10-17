@@ -143,7 +143,7 @@ Costanti configurabili: `expPerLevel = 100`, `rpPerLevel = 5` (range 3–10).
 | Costo reward | piccola (`small`) 10 · media (`medium`) 25 · grande (`large`) 60 RP |
 | Livelli per reward | `ceil(cost / rpPerLevel)` (mostrato nel form reward; la funzione di dominio nasce con la card UI che lo mostra) |
 | Riscatto | se `rp >= cost`: `rp -= cost`, crea `Redemption` e rimuovi la reward dalla lista disponibili; altrimenti toast con `cost - rp` |
-| Streak | +1 a ogni completamento (anche oltre la quota settimanale di una `xN`, sempre max 1 al giorno). Azzeramento lazy (`refreshStreak`, nessun job): giornaliera se passa un giorno senza completarla; `xN` se la settimana lun–dom si chiude sotto quota. Nella settimana di creazione la quota è `min(N, giorni rimasti fino a domenica)` (`Habit.createdAt`). |
+| Streak | +1 a ogni completamento (anche oltre la quota settimanale di una `xN`, sempre max 1 al giorno). Azzeramento lazy (`refreshStreak`, nessun job): l'ultimo completamento è il `Completion` più recente della habit (non c'è `lastCompletedAt`) e la sua frequenza decide la regola. Giornaliera: si azzera se passa un giorno senza completarla. `xN`: si azzera se la settimana lun–dom si chiude sotto quota, giudicata con la frequenza con cui è stata fatta (`Completion.frequency`, se mista quella dell'ultimo completamento), non con quella attuale della habit; una settimana senza completamenti è fallita. Nella settimana di creazione la quota è `min(N, giorni rimasti fino a domenica)` (`Habit.createdAt`). Lo storico dei completamenti è la fonte di verità: `complete`/`refreshStreak` ricevono la finestra dall'inizio della settimana precedente a `now` (lista vuota con streak > 0 = ultimo completamento più vecchio = streak azzerata). |
 | Missione giornaliera | `questPct = doneToday / dueToday`; completata = tutte le dovute fatte |
 | Medaglie | 4 tracce × 3 tier (tabella `#regole`): streak 10/50/100, completamenti 25/100/250, livello 5/15/30, riscatti 1/5/12 |
 
@@ -152,14 +152,17 @@ Costanti configurabili: `expPerLevel = 100`, `rpPerLevel = 5` (range 3–10).
 // Pseudocodice di riferimento: l'implementazione reale (lib/domain/game_rules.dart)
 // usa GameHero (non Hero, collide con Flutter), CompletionFeedback al posto di
 // Overlay, risultati sealed (Completed / AlreadyDoneToday / HabitArchived) e
-// riceve id e completamenti della settimana come parametri.
-CompletionResult complete(Hero hero, Habit h, DateTime now) {
-  if (h.isDoneOn(now)) return CompletionResult.noop();
-  final habit = h.copyWith(streak: h.streak + 1, totalCompletions: h.totalCompletions + 1, lastCompletedAt: now);
+// riceve id e completamenti (dall'inizio della settimana precedente a now)
+// come parametri. "Già fatta oggi" e "ultimo completamento" si ricavano da
+// quei completamenti: Habit non ha lastCompletedAt.
+CompletionResult complete(Hero hero, Habit h, DateTime now, Iterable<Completion> weekCompletions) {
+  if (isDoneOn(h, now, weekCompletions)) return CompletionResult.noop();
+  final fresh = refreshStreak(h, today: now, completions: weekCompletions);
+  final habit = fresh.copyWith(streak: fresh.streak + 1, totalCompletions: fresh.totalCompletions + 1);
   var exp = hero.exp + h.exp, level = hero.level, rp = hero.rewardPoints, gained = 0;
   while (exp >= expPerLevel) { exp -= expPerLevel; level++; rp += rpPerLevel; gained += rpPerLevel; }
   final overlay = gained > 0 ? Overlay.levelUp(rp: gained) : Overlay.exp(exp: h.exp, name: h.name);
-  return CompletionResult(hero.copyWith(exp: exp, level: level, rewardPoints: rp), habit, overlay, Completion(h.id, now, h.exp));
+  return CompletionResult(hero.copyWith(exp: exp, level: level, rewardPoints: rp), habit, overlay, Completion(h.id, now, h.exp, h.frequency));
 }
 ```
 
