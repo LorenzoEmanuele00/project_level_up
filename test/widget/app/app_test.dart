@@ -2,20 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:levelup/app/app.dart';
+import 'package:levelup/data/in_memory_game_repository.dart';
 import 'package:levelup/domain/enums.dart';
+import 'package:levelup/state/game_providers.dart';
 import 'package:levelup/state/theme_settings.dart';
 import 'package:levelup/theme/colors.dart';
 import 'package:levelup/theme/palettes.dart';
 import 'package:levelup/ui/screens/home_placeholder.dart';
 
+/// Pumps the app on an in-memory repository (the day refresher reads it).
+/// The scope lives in the widget tree, so its timers go away with the test.
 Future<ProviderContainer> _pumpApp(WidgetTester tester) async {
-  final container = ProviderContainer();
-  addTearDown(container.dispose);
   await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: const LevelUpApp()),
+    ProviderScope(
+      overrides: [
+        gameRepositoryProvider.overrideWithValue(InMemoryGameRepository()),
+      ],
+      child: const LevelUpApp(),
+    ),
   );
   await tester.pumpAndSettle();
-  return container;
+  return ProviderScope.containerOf(tester.element(find.byType(LevelUpApp)));
 }
 
 ThemeData _theme(WidgetTester tester) =>

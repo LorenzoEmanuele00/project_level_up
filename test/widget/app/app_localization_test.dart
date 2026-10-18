@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:levelup/app/app.dart';
+import 'package:levelup/data/in_memory_game_repository.dart';
 import 'package:levelup/l10n/app_localizations.dart';
+import 'package:levelup/state/game_providers.dart';
 import 'package:levelup/ui/screens/home_placeholder.dart';
 
 Future<Locale> _pumpWithDeviceLocales(
@@ -12,10 +14,13 @@ Future<Locale> _pumpWithDeviceLocales(
   tester.platformDispatcher.localesTestValue = locales;
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
 
-  final container = ProviderContainer();
-  addTearDown(container.dispose);
   await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: const LevelUpApp()),
+    ProviderScope(
+      overrides: [
+        gameRepositoryProvider.overrideWithValue(InMemoryGameRepository()),
+      ],
+      child: const LevelUpApp(),
+    ),
   );
   await tester.pumpAndSettle();
   return Localizations.localeOf(tester.element(find.byType(HomePlaceholder)));
