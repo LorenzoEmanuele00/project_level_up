@@ -174,6 +174,36 @@ class DriftGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> refreshStreaks(DateTime now) => _db.transaction(() async {
+    final at = normalizeInstant(now);
+    final rows =
+        await (_db.select(_db.habits)..where(
+              (h) => h.archived.equals(false) & h.streak.isBiggerThanValue(0),
+            ))
+            .get();
+    if (rows.isEmpty) return;
+
+    final window = [
+      for (final row in await _completionsIn(
+        completionWindowStart(at),
+        completionWindowEnd(at),
+      ).get())
+        completionFromRow(row),
+    ];
+    for (final row in rows) {
+      final fresh = refreshStreak(
+        habitFromRow(row),
+        today: at,
+        completions: window,
+      );
+      if (fresh.streak == row.streak) continue;
+      await (_db.update(_db.habits)..where((h) => h.id.equals(row.id))).write(
+        HabitsCompanion(streak: Value(fresh.streak), updatedAt: Value(at)),
+      );
+    }
+  });
+
+  @override
   Future<CompletionResult> completeHabit(String habitId, DateTime now) =>
       _db.transaction(() async {
         final at = normalizeInstant(now);

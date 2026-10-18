@@ -186,6 +186,61 @@ void main() {
       expect(await db.select(db.redemptions).get(), hasLength(1));
     });
 
+    test(
+      'refreshStreaks stamps updatedAt only on the habits it resets',
+      () async {
+        final (hero, lapsed) = await heroWithHabit();
+        final alive = await repo.createHabit(
+          heroId: hero.id,
+          name: 'Run',
+          icon: 'gym',
+          difficulty: Difficulty.easy,
+          frequency: Frequency.daily,
+          hue: HabitHue.red,
+          now: _monday,
+        );
+        await repo.completeHabit(lapsed.id, _monday);
+        final wednesday = _monday.add(const Duration(days: 2));
+        await repo.completeHabit(alive.id, wednesday);
+        final aliveStamp = (await db.select(db.habits).get())
+            .singleWhere((r) => r.id == alive.id)
+            .updatedAt;
+        final now = _monday.add(const Duration(days: 3, hours: 1));
+
+        await repo.refreshStreaks(now);
+
+        final rows = {
+          for (final r in await db.select(db.habits).get()) r.id: r,
+        };
+        expect(rows[lapsed.id]?.streak, 0);
+        expect(rows[lapsed.id]?.updatedAt, now.toUtc());
+        expect(rows[alive.id]?.streak, 1);
+        expect(rows[alive.id]?.updatedAt, aliveStamp);
+      },
+    );
+
+    test('refreshStreaks reads the completions with a single query', () async {
+      final (hero, first) = await heroWithHabit();
+      for (final name in ['b', 'c']) {
+        await repo.createHabit(
+          heroId: hero.id,
+          name: name,
+          icon: 'book',
+          difficulty: Difficulty.easy,
+          frequency: Frequency.daily,
+          hue: HabitHue.red,
+          now: _monday,
+        );
+      }
+      await repo.completeHabit(first.id, _monday);
+      spy.selects.clear();
+
+      await repo.refreshStreaks(_monday.add(const Duration(days: 3)));
+
+      final reads = spy.selects.where((s) => s.sql.contains('"completions"'));
+      expect(reads, hasLength(1));
+    });
+
     group('query plans', () {
       test('the interval and today streams use the index on at', () async {
         await heroWithHabit();
