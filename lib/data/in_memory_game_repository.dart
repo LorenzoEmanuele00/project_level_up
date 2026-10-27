@@ -225,6 +225,33 @@ class InMemoryGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> refreshStreaks(DateTime now) async {
+    final at = normalizeInstant(now);
+    final window = _completionsIn(
+      completionWindowStart(at),
+      completionWindowEnd(at),
+    );
+    final refreshed = <_StoredHabit>[];
+    var changed = false;
+    for (final stored in _habits) {
+      final streak = stored.habit.archived || stored.habit.streak == 0
+          ? stored.habit.streak
+          : refreshStreak(stored.habit, today: at, completions: window).streak;
+      if (streak == stored.habit.streak) {
+        refreshed.add(stored);
+      } else {
+        changed = true;
+        refreshed.add((
+          habit: stored.habit.copyWith(streak: streak),
+          heroId: stored.heroId,
+        ));
+      }
+    }
+    _habits = refreshed;
+    if (changed) _notify();
+  }
+
+  @override
   Future<CompletionResult> completeHabit(String habitId, DateTime now) async {
     final at = normalizeInstant(now);
     final stored = _requireHabit(habitId);

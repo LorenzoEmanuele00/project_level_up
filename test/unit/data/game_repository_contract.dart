@@ -402,6 +402,186 @@ void runGameRepositoryContract(Future<GameRepository> Function() create) {
     });
   });
 
+  group('refreshStreaks', () {
+    final tuesday = _monday.add(const Duration(days: 1));
+    final wednesday = _monday.add(const Duration(days: 2));
+    final thursday = _monday.add(const Duration(days: 3));
+
+    Future<Habit> habitNow(String id) async =>
+        (await repo.watchHabits(includeArchived: true).first).singleWhere(
+          (h) => h.id == id,
+        );
+
+    /// Habit values as streamed, once the stream has been quiet for a while.
+    Future<void> settle() =>
+        Future<void>.delayed(const Duration(milliseconds: 50));
+
+    test('resets a daily streak when a day was skipped', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero);
+      await complete(habit, _monday);
+      await complete(habit, tuesday);
+
+      await repo.refreshStreaks(thursday);
+
+      expect((await habitNow(habit.id)).streak, 0);
+    });
+
+    test('keeps a daily streak alive when it was done yesterday', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero);
+      await complete(habit, _monday);
+      await complete(habit, tuesday);
+
+      await repo.refreshStreaks(wednesday);
+
+      expect((await habitNow(habit.id)).streak, 2);
+    });
+
+    test('resets a streak whose last completion is weeks old', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero);
+      await complete(habit, _monday);
+
+      await repo.refreshStreaks(_monday.add(const Duration(days: 21)));
+
+      expect((await habitNow(habit.id)).streak, 0);
+    });
+
+    test('an xN streak at quota survives into the following week', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero, frequency: Frequency.x3);
+      await complete(habit, _monday);
+      await complete(habit, tuesday);
+      await complete(habit, wednesday);
+      final nextMonday = _monday.add(const Duration(days: 7));
+
+      await repo.refreshStreaks(nextMonday);
+      expect((await habitNow(habit.id)).streak, 3);
+
+      await repo.refreshStreaks(nextMonday.add(const Duration(days: 7)));
+      expect((await habitNow(habit.id)).streak, 0);
+    });
+
+    test('an xN streak under quota resets once the week closes', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero, frequency: Frequency.x3);
+      await complete(habit, _monday);
+      await complete(habit, tuesday);
+
+      await repo.refreshStreaks(_monday.add(const Duration(days: 7)));
+
+      expect((await habitNow(habit.id)).streak, 0);
+    });
+
+    test('never touches the best streak, the hero or the history', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero);
+      await complete(habit, _monday);
+      await complete(habit, tuesday);
+      final heroBefore = await repo.watchHero().first;
+      final historyBefore = await repo
+          .watchCompletionsBetween(_monday, thursday)
+          .first;
+
+      await repo.refreshStreaks(thursday);
+
+      final after = await habitNow(habit.id);
+      expect(
+        (after.streak, after.bestStreak, after.totalCompletions),
+        (0, 2, 2),
+      );
+      expect(await repo.watchHero().first, heroBefore);
+      expect(
+        await repo.watchCompletionsBetween(_monday, thursday).first,
+        historyBefore,
+      );
+    });
+
+    test('resets only the habits whose streak broke', () async {
+      final hero = await newHero();
+      final lapsed = await newHabit(hero);
+      final alive = await newHabit(
+        hero,
+        now: _monday.add(const Duration(minutes: 1)),
+      );
+      await complete(lapsed, _monday);
+      await complete(alive, _monday);
+      await complete(alive, tuesday);
+      await complete(alive, wednesday);
+
+      await repo.refreshStreaks(thursday);
+
+      expect((await habitNow(lapsed.id)).streak, 0);
+      expect((await habitNow(alive.id)).streak, 3);
+    });
+
+    test('is idempotent', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero);
+      await complete(habit, _monday);
+
+      await repo.refreshStreaks(thursday);
+      final once = await repo.watchHabits().first;
+      await repo.refreshStreaks(thursday);
+
+      expect(await repo.watchHabits().first, once);
+    });
+
+    test('does nothing with no habits', () async {
+      await repo.refreshStreaks(thursday);
+
+      expect(await repo.watchHabits().first, isEmpty);
+    });
+
+    test('ignores archived habits', () async {
+      final hero = await newHero();
+      final habit = await newHabit(hero);
+      await complete(habit, _monday);
+      await repo.archiveHabit(habit.id, tuesday);
+
+      await repo.refreshStreaks(thursday);
+
+      expect((await habitNow(habit.id)).streak, 1);
+    });
+
+    test('does not re-emit the habits when nothing changes', () async {
+      final hero = await newHero();
+      final alive = await newHabit(hero);
+      await newHabit(hero); // streak 0: nothing to refresh
+      await complete(alive, _monday);
+      final emissions = <List<Habit>>[];
+      final sub = repo.watchHabits().listen(emissions.add);
+      addTearDown(sub.cancel);
+      await settle();
+      final before = emissions.length;
+
+      await repo.refreshStreaks(tuesday);
+      await settle();
+
+      expect(emissions, hasLength(before));
+    });
+
+    test('emits the habits once when streaks are reset', () async {
+      final hero = await newHero();
+      final a = await newHabit(hero);
+      final b = await newHabit(hero);
+      await complete(a, _monday);
+      await complete(b, _monday);
+      final emissions = <List<Habit>>[];
+      final sub = repo.watchHabits().listen(emissions.add);
+      addTearDown(sub.cancel);
+      await settle();
+      final before = emissions.length;
+
+      await repo.refreshStreaks(thursday);
+      await settle();
+
+      expect(emissions, hasLength(before + 1));
+      expect(emissions.last.map((h) => h.streak), [0, 0]);
+    });
+  });
+
   group('rewards', () {
     test('createReward returns the stored reward', () async {
       final hero = await newHero();

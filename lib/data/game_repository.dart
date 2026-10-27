@@ -105,6 +105,14 @@ abstract interface class GameRepository {
   /// write nothing. Throws [EntityNotFoundException] for an unknown habit.
   Future<CompletionResult> completeHabit(String habitId, DateTime now);
 
+  /// Resets the streaks that broke as of [now] (lazy reset, see
+  /// `refreshStreak`) and saves only the habits that changed. Persistent
+  /// stores also stamp their `updated_at` with [now] (the in-memory model has
+  /// no such field). Archived habits are left alone, and so are `bestStreak`,
+  /// the hero and the history. Idempotent; when nothing changes nothing is
+  /// written, so the streams do not emit.
+  Future<void> refreshStreaks(DateTime now);
+
   /// Redeems a reward: pays the cost, records the redemption and marks the
   /// reward as redeemed (it is kept), together. Not enough points writes
   /// nothing. Throws [EntityNotFoundException] for an unknown reward and
