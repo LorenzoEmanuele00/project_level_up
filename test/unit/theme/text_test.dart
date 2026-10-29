@@ -59,5 +59,32 @@ void main() {
     test('upper upper-cases overline copy', () {
       expect(AppText.upper('passo 1 · il tuo eroe'), 'PASSO 1 · IL TUO EROE');
     });
+
+    test('new scale entries follow the Home component table', () {
+      expect(AppText.statLabel.fontSize, 9);
+      expect(AppText.statLabel.fontWeight, FontWeight.w400);
+      expect(AppText.statLabel.letterSpacing, closeTo(.27, .001));
+      expect(AppText.tag.fontSize, 11);
+      expect(AppText.tag.fontWeight, FontWeight.w700);
+      expect(AppText.small.fontSize, 11);
+      expect(AppText.small.fontWeight, FontWeight.w400);
+      expect(AppText.emphasis.fontSize, 15);
+      expect(AppText.emphasis.fontWeight, FontWeight.w700);
+      expect(AppText.statValue.fontSize, 18);
+      expect(AppText.statValue.fontWeight, FontWeight.w700);
+    });
+
+    test('new styles are part of AppText.all', () {
+      expect(
+        AppText.all,
+        containsAll([
+          AppText.statLabel,
+          AppText.tag,
+          AppText.small,
+          AppText.emphasis,
+          AppText.statValue,
+        ]),
+      );
+    });
   });
 }
