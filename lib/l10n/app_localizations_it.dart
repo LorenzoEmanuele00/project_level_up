@@ -11,4 +11,24 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get appTitle => 'LevelUp';
+
+  @override
+  String habitExpGain(int exp) {
+    final intl.NumberFormat expNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String expString = expNumberFormat.format(exp);
+
+    return '+$expString EXP';
+  }
+
+  @override
+  String habitCheckComplete(String name) {
+    return 'Completa $name';
+  }
+
+  @override
+  String habitCheckDone(String name) {
+    return '$name completata';
+  }
 }

@@ -59,6 +59,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.accentSoft,
     required this.accentLine,
     required this.obGlow,
+    required this.onAccent,
+    required this.onTintFill,
   });
 
   factory AppColors.light(Color accent) => AppColors(
@@ -81,6 +83,8 @@ class AppColors extends ThemeExtension<AppColors> {
     accentSoft: accent.withValues(alpha: .09),
     accentLine: accent.withValues(alpha: .32),
     obGlow: accent.withValues(alpha: .12),
+    onAccent: _white,
+    onTintFill: _white.withValues(alpha: .62),
   );
 
   factory AppColors.dark(Color accent) => AppColors(
@@ -103,6 +107,8 @@ class AppColors extends ThemeExtension<AppColors> {
     accentSoft: accent.withValues(alpha: .15),
     accentLine: accent.withValues(alpha: .32),
     obGlow: accent.withValues(alpha: .22),
+    onAccent: _white,
+    onTintFill: _white.withValues(alpha: .12),
   );
 
   final bool isDark;
@@ -125,6 +131,12 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color accentLine;
   final Color obGlow;
 
+  /// Content over a solid accent (or ink) fill.
+  final Color onAccent;
+
+  /// Fill of elements sitting on a hue tint (habit check, tile icon).
+  final Color onTintFill;
+
   /// Every colour token by name. Light and dark expose the same names.
   Map<String, Color> get tokens => {
     'bg': bg,
@@ -145,6 +157,8 @@ class AppColors extends ThemeExtension<AppColors> {
     'accentSoft': accentSoft,
     'accentLine': accentLine,
     'obGlow': obGlow,
+    'onAccent': onAccent,
+    'onTintFill': onTintFill,
   };
 
   /// Tint/ink pair of a habit hue. `red` follows the accent; the others are
@@ -187,6 +201,8 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? accentSoft,
     Color? accentLine,
     Color? obGlow,
+    Color? onAccent,
+    Color? onTintFill,
   }) => AppColors(
     isDark: isDark ?? this.isDark,
     bg: bg ?? this.bg,
@@ -207,6 +223,8 @@ class AppColors extends ThemeExtension<AppColors> {
     accentSoft: accentSoft ?? this.accentSoft,
     accentLine: accentLine ?? this.accentLine,
     obGlow: obGlow ?? this.obGlow,
+    onAccent: onAccent ?? this.onAccent,
+    onTintFill: onTintFill ?? this.onTintFill,
   );
 
   @override
@@ -233,6 +251,8 @@ class AppColors extends ThemeExtension<AppColors> {
       accentSoft: mix(accentSoft, other.accentSoft),
       accentLine: mix(accentLine, other.accentLine),
       obGlow: mix(obGlow, other.obGlow),
+      onAccent: mix(onAccent, other.onAccent),
+      onTintFill: mix(onTintFill, other.onTintFill),
     );
   }
 }

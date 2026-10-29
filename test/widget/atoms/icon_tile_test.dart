@@ -4,15 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:levelup/domain/enums.dart';
 import 'package:levelup/theme/colors.dart';
 import 'package:levelup/theme/icons.dart';
-import 'package:levelup/theme/theme.dart';
 import 'package:levelup/ui/atoms/app_icon.dart';
 import 'package:levelup/ui/atoms/icon_tile.dart';
 
-Widget _host(Widget child, {Brightness brightness = Brightness.light}) =>
-    MaterialApp(
-      theme: buildTheme(brightness, AccentKey.terracotta),
-      home: Scaffold(body: Center(child: child)),
-    );
+import '../../helpers/widget_host.dart';
 
 AppColors _colors(WidgetTester tester) =>
     Theme.of(tester.element(find.byType(Scaffold))).extension<AppColors>()!;
@@ -21,7 +16,7 @@ void main() {
   group('AppIcon', () {
     testWidgets('renders the SVG tinted with the given colour', (tester) async {
       await tester.pumpWidget(
-        _host(const AppIcon('flame', size: 20, color: Color(0xFF112233))),
+        widgetHost(const AppIcon('flame', size: 20, color: Color(0xFF112233))),
       );
 
       final svg = tester.widget<SvgPicture>(find.byType(SvgPicture));
@@ -38,7 +33,9 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        _host(const AppIcon('does-not-exist', size: 20, color: Colors.black)),
+        widgetHost(
+          const AppIcon('does-not-exist', size: 20, color: Colors.black),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -53,7 +50,7 @@ void main() {
   group('IconTile', () {
     testWidgets('uses tint as background and ink for the icon', (tester) async {
       await tester.pumpWidget(
-        _host(const IconTile('target', size: 100, hue: HabitHue.teal)),
+        widgetHost(const IconTile('target', size: 100, hue: HabitHue.teal)),
       );
       final tone = _colors(tester).hue(HabitHue.teal);
 
@@ -71,7 +68,7 @@ void main() {
 
     testWidgets('padding is 23% and radius 29% of the side', (tester) async {
       await tester.pumpWidget(
-        _host(const IconTile('target', size: 100, hue: HabitHue.gold)),
+        widgetHost(const IconTile('target', size: 100, hue: HabitHue.gold)),
       );
 
       expect(tester.getSize(find.byType(IconTile)), const Size(100, 100));
@@ -87,9 +84,35 @@ void main() {
       expect(tester.getSize(find.byType(SvgPicture)), const Size(54, 54));
     });
 
+    testWidgets('background overrides the tint, the ink stays', (tester) async {
+      const background = Color(0xFF123456);
+      await tester.pumpWidget(
+        widgetHost(
+          const IconTile(
+            'target',
+            size: 48,
+            hue: HabitHue.teal,
+            background: background,
+          ),
+        ),
+      );
+      final tone = _colors(tester).hue(HabitHue.teal);
+
+      final box = tester.widget<DecoratedBox>(
+        find.descendant(
+          of: find.byType(IconTile),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      final svg = tester.widget<SvgPicture>(find.byType(SvgPicture));
+
+      expect((box.decoration as BoxDecoration).color, background);
+      expect(svg.colorFilter, ColorFilter.mode(tone.ink, BlendMode.srcIn));
+    });
+
     testWidgets('follows the dark theme tone', (tester) async {
       await tester.pumpWidget(
-        _host(
+        widgetHost(
           const IconTile('gym', size: 48, hue: HabitHue.blue),
           brightness: Brightness.dark,
         ),
