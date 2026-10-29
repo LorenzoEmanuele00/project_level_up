@@ -6,13 +6,23 @@ import 'package:levelup/ui/atoms/app_icon.dart';
 const _paddingRatio = 0.23;
 const _radiusRatio = 0.29;
 
-/// Rounded square with the hue tint as background and the icon in the hue ink.
+/// Rounded square with the hue tint (or [background]) as background and the
+/// icon in the hue ink.
 class IconTile extends StatelessWidget {
-  const IconTile(this.icon, {required this.size, required this.hue, super.key});
+  const IconTile(
+    this.icon, {
+    required this.size,
+    required this.hue,
+    this.background,
+    super.key,
+  });
 
   final String icon;
   final double size;
   final HabitHue hue;
+
+  /// Fill of the tile. Defaults to the hue tint.
+  final Color? background;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,7 @@ class IconTile extends StatelessWidget {
       dimension: size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: tone.tint,
+          color: background ?? tone.tint,
           borderRadius: BorderRadius.circular(size * _radiusRatio),
         ),
         child: Padding(
