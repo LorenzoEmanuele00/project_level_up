@@ -31,5 +31,130 @@
         "type": "String"
       }
     }
+  },
+  "homeGreetingMorning": "Good morning, {name}",
+  "@homeGreetingMorning": {
+    "description": "Home greeting from 05:00 to 11:59.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingAfternoon": "Good afternoon, {name}",
+  "@homeGreetingAfternoon": {
+    "description": "Home greeting from 12:00 to 17:59.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingEvening": "Good evening, {name}",
+  "@homeGreetingEvening": {
+    "description": "Home greeting from 18:00 to 04:59.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "heroFallbackName": "Hero",
+  "@heroFallbackName": {
+    "description": "Name shown in the greeting when the hero has no name."
+  },
+  "heroMissionProgress": "{done}/{due} completed · +{exp} EXP left",
+  "@heroMissionProgress": {
+    "description": "Line under today's mission bar.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "due": {
+        "type": "int"
+      },
+      "exp": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "statDone": "Done",
+  "@statDone": {
+    "description": "Label of the stat of habits completed today (shown upper-case)."
+  },
+  "statExp": "EXP",
+  "@statExp": {
+    "description": "Label of the stat of EXP earned today."
+  },
+  "statStreak": "Streak",
+  "@statStreak": {
+    "description": "Label of the stat of the longest streak."
+  },
+  "statLevel": "Level",
+  "@statLevel": {
+    "description": "Label of the stat of the hero level."
+  },
+  "homeTodayTitle": "Today",
+  "@homeTodayTitle": {
+    "description": "Title of the section of today's habits on the Home."
+  },
+  "homeSeeAll": "See all",
+  "@homeSeeAll": {
+    "description": "Action that opens the list of all habits."
+  },
+  "homeAllDone": "All done for today",
+  "@homeAllDone": {
+    "description": "Message when nothing is left to do today or no habit is due."
+  },
+  "homeLoadError": "Couldn't load your habits",
+  "@homeLoadError": {
+    "description": "Message when loading the Home data fails."
+  },
+  "homeOpenProfile": "Open profile",
+  "@homeOpenProfile": {
+    "description": "Accessibility label of the Home avatar."
+  },
+  "homeOpenRewards": "Reward points: {points}. Open the reward shop",
+  "@homeOpenRewards": {
+    "description": "Accessibility label of the Home points pill.",
+    "placeholders": {
+      "points": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "homeOpenMission": "Open today's mission",
+  "@homeOpenMission": {
+    "description": "Accessibility label of the Home stats area."
+  },
+  "comingSoonTitle": "Coming soon",
+  "@comingSoonTitle": {
+    "description": "Title of the placeholder screens."
+  },
+  "comingSoonBody": "This section is coming soon.",
+  "@comingSoonBody": {
+    "description": "Text of the placeholder screens."
+  },
+  "comingSoonClose": "Close",
+  "@comingSoonClose": {
+    "description": "Accessibility label of the button closing a placeholder screen."
+  },
+  "comingSoonProfile": "Profile",
+  "@comingSoonProfile": {
+    "description": "Name of the profile placeholder screen."
+  },
+  "comingSoonRewards": "Reward shop",
+  "@comingSoonRewards": {
+    "description": "Name of the rewards placeholder screen."
+  },
+  "comingSoonMission": "Today's mission",
+  "@comingSoonMission": {
+    "description": "Name of the mission placeholder screen."
+  },
+  "comingSoonHabits": "All habits",
+  "@comingSoonHabits": {
+    "description": "Name of the habit list placeholder screen."
   }
 }

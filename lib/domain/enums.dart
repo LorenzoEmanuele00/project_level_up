@@ -54,3 +54,6 @@ enum AvatarMode { initial, icon }
 
 /// Light or dark appearance, as stored on the hero.
 enum ThemeKey { light, dark }
+
+/// Part of the day the Home greeting refers to.
+enum GreetingPeriod { morning, afternoon, evening }
