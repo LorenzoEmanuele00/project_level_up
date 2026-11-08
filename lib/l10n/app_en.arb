@@ -3,5 +3,33 @@
   "appTitle": "LevelUp",
   "@appTitle": {
     "description": "App name, shown as the application title and on the home screen."
+  },
+  "habitExpGain": "+{exp} EXP",
+  "@habitExpGain": {
+    "description": "EXP reward shown on a habit tile (e.g. \"+20 EXP\").",
+    "placeholders": {
+      "exp": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "habitCheckComplete": "Complete {name}",
+  "@habitCheckComplete": {
+    "description": "Accessibility label of the check of a habit still to do.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "habitCheckDone": "{name} completed",
+  "@habitCheckDone": {
+    "description": "Accessibility label of the check of a habit already completed today.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

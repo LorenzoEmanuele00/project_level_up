@@ -26,6 +26,12 @@ abstract final class AppRadius {
   static const hero = 30.0;
 }
 
+/// Interaction sizes.
+abstract final class AppSizes {
+  /// Minimum touch target side.
+  static const minTapTarget = 44.0;
+}
+
 /// Shadows and glows. Colours are passed in so they follow the theme.
 abstract final class Shadows {
   static List<BoxShadow> ctaGlow(Color accent) => [
@@ -80,6 +86,9 @@ abstract final class Motion {
   /// Screen entrances and list staggering.
   static const apple = Cubic(.32, .72, 0, 1);
 
+  /// Block and button entrances (token only: no widget uses it yet).
+  static const rise = Cubic(.2, .82, .2, 1);
+
   static const springShort = Duration(milliseconds: 180);
   static const springLong = Duration(milliseconds: 200);
   static const outShort = Duration(milliseconds: 300);
@@ -88,6 +97,24 @@ abstract final class Motion {
   static const popLong = Duration(milliseconds: 600);
   static const appleShort = Duration(milliseconds: 500);
   static const appleLong = Duration(milliseconds: 550);
+
+  static const riseDuration = Duration(milliseconds: 380);
+
+  /// Entrance of a whole block: fade, 48 px rise and scale .965 to 1.
+  static const blockUpDuration = Duration(milliseconds: 600);
+  static const blockUpOffset = 48.0;
+  static const blockUpScale = .965;
+
+  /// Entrance of a list item: fade and 12 px rise.
+  static const itemInDuration = Duration(milliseconds: 550);
+  static const itemInOffset = 12.0;
+
+  /// Delay added for each following item of a staggered list.
+  static const stagger = Duration(milliseconds: 50);
+
+  /// Press scale of large elements (tiles, cards) and of small ones.
+  static const pressScaleLarge = .965;
+  static const pressScaleSmall = .88;
 
   /// Replaces pop/confetti animations when animations are disabled.
   static const reducedFade = Duration(milliseconds: 150);

@@ -128,4 +128,38 @@ void main() {
       expect(Motion.appleLong.inMilliseconds, 550);
     });
   });
+
+  group('Motion entrances and press', () {
+    test('rise is cubic(.2, .82, .2, 1) lasting 380 ms', () {
+      final cubic = Motion.rise;
+      expect([cubic.a, cubic.b, cubic.c, cubic.d], [.2, .82, .2, 1]);
+      expect(Motion.riseDuration.inMilliseconds, 380);
+    });
+
+    test('blockUp lasts 600 ms from 48 px down and scale .965', () {
+      expect(Motion.blockUpDuration.inMilliseconds, 600);
+      expect(Motion.blockUpOffset, 48);
+      expect(Motion.blockUpScale, .965);
+    });
+
+    test('itemIn lasts 550 ms from 12 px down', () {
+      expect(Motion.itemInDuration.inMilliseconds, 550);
+      expect(Motion.itemInOffset, 12);
+    });
+
+    test('stagger adds 50 ms per item', () {
+      expect(Motion.stagger.inMilliseconds, 50);
+    });
+
+    test('press scales large elements to .965 and small ones to .88', () {
+      expect(Motion.pressScaleLarge, .965);
+      expect(Motion.pressScaleSmall, .88);
+    });
+  });
+
+  group('AppSizes', () {
+    test('minimum tap target is 44', () {
+      expect(AppSizes.minTapTarget, 44.0);
+    });
+  });
 }

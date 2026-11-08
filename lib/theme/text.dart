@@ -72,6 +72,38 @@ abstract final class AppText {
     letterSpacing: .3,
   );
 
+  /// Label of a stat tile (upper case by the component).
+  static const statLabel = TextStyle(
+    fontFamily: _family,
+    fontSize: 9,
+    fontWeight: FontWeight.w400,
+    letterSpacing: .27,
+  );
+
+  static const tag = TextStyle(
+    fontFamily: _family,
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const small = TextStyle(
+    fontFamily: _family,
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const emphasis = TextStyle(
+    fontFamily: _family,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const statValue = TextStyle(
+    fontFamily: _family,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+  );
+
   static const all = [
     display,
     levelXl,
@@ -83,6 +115,11 @@ abstract final class AppText {
     caption,
     overline,
     micro,
+    statLabel,
+    tag,
+    small,
+    emphasis,
+    statValue,
   ];
 
   /// Overline copy is always upper case.

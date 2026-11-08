@@ -63,7 +63,7 @@ void main() {
       expect(light.tokens.keys.toSet(), dark.tokens.keys.toSet());
     });
 
-    test('exposes the 17 design tokens plus obGlow', () {
+    test('exposes the design tokens plus obGlow, onAccent and onTintFill', () {
       expect(light.tokens.keys.toSet(), {
         'bg',
         'surface',
@@ -83,7 +83,41 @@ void main() {
         'accentSoft',
         'accentLine',
         'obGlow',
+        'onAccent',
+        'onTintFill',
       });
+    });
+  });
+
+  group('AppColors on-colour tokens', () {
+    test('onAccent is white in both themes', () {
+      expect(light.onAccent, const Color(0xFFFFFFFF));
+      expect(dark.onAccent, const Color(0xFFFFFFFF));
+    });
+
+    test('onTintFill is white at alpha .62 in light and .12 in dark', () {
+      expectRgb(light.onTintFill, 0xFFFFFF);
+      expect(light.onTintFill.a, closeTo(.62, .005));
+      expectRgb(dark.onTintFill, 0xFFFFFF);
+      expect(dark.onTintFill.a, closeTo(.12, .005));
+    });
+
+    test('copyWith replaces the new tokens only when given', () {
+      final copy = light.copyWith(onAccent: const Color(0xFF010203));
+
+      expect(copy.onAccent, const Color(0xFF010203));
+      expect(copy.onTintFill, light.onTintFill);
+      expect(
+        light.copyWith(onTintFill: const Color(0xFF040506)).onTintFill,
+        const Color(0xFF040506),
+      );
+    });
+
+    test('lerp blends the new tokens', () {
+      final mid = light.lerp(dark, .5);
+
+      expect(mid.onAccent, Color.lerp(light.onAccent, dark.onAccent, .5));
+      expect(mid.onTintFill, Color.lerp(light.onTintFill, dark.onTintFill, .5));
     });
   });
 

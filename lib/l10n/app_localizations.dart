@@ -103,6 +103,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'LevelUp'**
   String get appTitle;
+
+  /// Ricompensa in EXP mostrata sul tile di un'abitudine (es. "+20 EXP").
+  ///
+  /// In it, this message translates to:
+  /// **'+{exp} EXP'**
+  String habitExpGain(int exp);
+
+  /// Etichetta di accessibilità del check di un'abitudine ancora da fare.
+  ///
+  /// In it, this message translates to:
+  /// **'Completa {name}'**
+  String habitCheckComplete(String name);
+
+  /// Etichetta di accessibilità del check di un'abitudine già completata oggi.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} completata'**
+  String habitCheckDone(String name);
 }
 
 class _AppLocalizationsDelegate

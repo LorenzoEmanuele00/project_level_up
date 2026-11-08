@@ -3,8 +3,6 @@ import 'package:levelup/domain/enums.dart';
 import 'package:levelup/theme/colors.dart';
 import 'package:levelup/theme/palettes.dart';
 
-const _onAccent = Color(0xFFFFFFFF);
-
 /// Builds the whole [ThemeData] from the theme brightness and the accent.
 /// Called again whenever either changes, so every token is rebuilt.
 ThemeData buildTheme(Brightness brightness, AccentKey accentKey) {
@@ -20,13 +18,13 @@ ThemeData buildTheme(Brightness brightness, AccentKey accentKey) {
     colorScheme: ColorScheme(
       brightness: brightness,
       primary: colors.accent,
-      onPrimary: _onAccent,
+      onPrimary: colors.onAccent,
       secondary: colors.accent2,
-      onSecondary: _onAccent,
+      onSecondary: colors.onAccent,
       // The design system defines no error token: placeholder until the
       // form cards (habit, reward, registration) decide how errors look.
       error: colors.accentDeep,
-      onError: _onAccent,
+      onError: colors.onAccent,
       surface: colors.surface,
       onSurface: colors.text,
     ),

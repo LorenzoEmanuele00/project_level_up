@@ -42,6 +42,17 @@ void main() {
       expect(theme.textTheme.titleLarge?.fontFamily, 'SpaceMono');
     });
 
+    test('colour scheme on-accent colours come from the onAccent token', () {
+      for (final brightness in Brightness.values) {
+        final theme = buildTheme(brightness, AccentKey.terracotta);
+        final colors = theme.extension<AppColors>()!;
+
+        expect(theme.colorScheme.onPrimary, colors.onAccent);
+        expect(theme.colorScheme.onSecondary, colors.onAccent);
+        expect(theme.colorScheme.onError, colors.onAccent);
+      }
+    });
+
     test('different accents produce different themes', () {
       final a = buildTheme(Brightness.light, AccentKey.terracotta);
       final b = buildTheme(Brightness.light, AccentKey.slate);
