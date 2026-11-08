@@ -31,5 +31,130 @@
         "type": "String"
       }
     }
+  },
+  "homeGreetingMorning": "Buongiorno, {name}",
+  "@homeGreetingMorning": {
+    "description": "Saluto della Home dalle 05:00 alle 11:59.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingAfternoon": "Buon pomeriggio, {name}",
+  "@homeGreetingAfternoon": {
+    "description": "Saluto della Home dalle 12:00 alle 17:59.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingEvening": "Buonasera, {name}",
+  "@homeGreetingEvening": {
+    "description": "Saluto della Home dalle 18:00 alle 04:59.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "heroFallbackName": "Eroe",
+  "@heroFallbackName": {
+    "description": "Nome mostrato nel saluto quando l'eroe non ha un nome."
+  },
+  "heroMissionProgress": "{done}/{due} completate · +{exp} EXP rimasti",
+  "@heroMissionProgress": {
+    "description": "Riga sotto la barra della missione di oggi.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "due": {
+        "type": "int"
+      },
+      "exp": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "statDone": "Fatte",
+  "@statDone": {
+    "description": "Etichetta della statistica delle habit completate oggi (mostrata in maiuscolo)."
+  },
+  "statExp": "EXP",
+  "@statExp": {
+    "description": "Etichetta della statistica degli EXP guadagnati oggi."
+  },
+  "statStreak": "Streak",
+  "@statStreak": {
+    "description": "Etichetta della statistica della streak più lunga."
+  },
+  "statLevel": "Livello",
+  "@statLevel": {
+    "description": "Etichetta della statistica del livello dell'eroe."
+  },
+  "homeTodayTitle": "Oggi",
+  "@homeTodayTitle": {
+    "description": "Titolo della sezione delle habit di oggi nella Home."
+  },
+  "homeSeeAll": "Vedi tutte",
+  "@homeSeeAll": {
+    "description": "Azione che apre la lista di tutte le habit."
+  },
+  "homeAllDone": "Tutto fatto per oggi",
+  "@homeAllDone": {
+    "description": "Messaggio quando non resta nulla da fare oggi o nessuna habit è dovuta."
+  },
+  "homeLoadError": "Impossibile caricare le habit",
+  "@homeLoadError": {
+    "description": "Messaggio quando il caricamento dei dati della Home fallisce."
+  },
+  "homeOpenProfile": "Apri il profilo",
+  "@homeOpenProfile": {
+    "description": "Etichetta di accessibilità dell'avatar nella Home."
+  },
+  "homeOpenRewards": "Reward points: {points}. Apri il Reward Shop",
+  "@homeOpenRewards": {
+    "description": "Etichetta di accessibilità della pill dei punti nella Home.",
+    "placeholders": {
+      "points": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "homeOpenMission": "Apri la missione di oggi",
+  "@homeOpenMission": {
+    "description": "Etichetta di accessibilità dell'area statistiche nella Home."
+  },
+  "comingSoonTitle": "Prossimamente",
+  "@comingSoonTitle": {
+    "description": "Titolo delle schermate segnaposto."
+  },
+  "comingSoonBody": "Questa sezione arriva presto.",
+  "@comingSoonBody": {
+    "description": "Testo delle schermate segnaposto."
+  },
+  "comingSoonClose": "Chiudi",
+  "@comingSoonClose": {
+    "description": "Etichetta di accessibilità del pulsante che chiude una schermata segnaposto."
+  },
+  "comingSoonProfile": "Profilo",
+  "@comingSoonProfile": {
+    "description": "Nome della schermata segnaposto del profilo."
+  },
+  "comingSoonRewards": "Reward Shop",
+  "@comingSoonRewards": {
+    "description": "Nome della schermata segnaposto dei reward."
+  },
+  "comingSoonMission": "Missione di oggi",
+  "@comingSoonMission": {
+    "description": "Nome della schermata segnaposto della missione."
+  },
+  "comingSoonHabits": "Tutte le habit",
+  "@comingSoonHabits": {
+    "description": "Nome della schermata segnaposto della lista habit."
   }
 }

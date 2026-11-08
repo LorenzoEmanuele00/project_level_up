@@ -34,6 +34,7 @@ class _DayRefresherState extends ConsumerState<DayRefresher> {
 
   void _onResume() {
     ref.read(todayProvider.notifier).refresh();
+    ref.read(greetingClockProvider.notifier).refresh();
     ref.invalidate(streakRefreshProvider);
   }
 

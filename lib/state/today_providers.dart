@@ -47,6 +47,42 @@ class TodayNotifier extends Notifier<DateTime> {
 }
 
 /// The current local day, see [TodayNotifier].
+/// The moment the Home greeting and date are computed from.
+///
+/// Unlike [todayProvider] it also changes at 05:00, 12:00 and 18:00, so the
+/// greeting follows the time of day while the app stays open. [refresh] re-reads
+/// the clock (called when the app resumes).
+class GreetingClockNotifier extends Notifier<DateTime> {
+  Timer? _timer;
+
+  @override
+  DateTime build() {
+    ref.onDispose(() => _timer?.cancel());
+    final now = ref.read(clockProvider)();
+    _scheduleNextChange(now);
+    return now;
+  }
+
+  void refresh() {
+    final now = ref.read(clockProvider)();
+    state = now;
+    _scheduleNextChange(now);
+  }
+
+  void _scheduleNextChange(DateTime now) {
+    _timer?.cancel();
+    final wait = nextGreetingChange(now).difference(now);
+    _timer = Timer(
+      wait < _minimumTimerDelay ? _minimumTimerDelay : wait,
+      refresh,
+    );
+  }
+}
+
+final greetingClockProvider = NotifierProvider<GreetingClockNotifier, DateTime>(
+  GreetingClockNotifier.new,
+);
+
 final todayProvider = NotifierProvider<TodayNotifier, DateTime>(
   TodayNotifier.new,
 );
