@@ -8,7 +8,7 @@ import 'package:levelup/state/game_providers.dart';
 import 'package:levelup/state/theme_settings.dart';
 import 'package:levelup/theme/colors.dart';
 import 'package:levelup/theme/palettes.dart';
-import 'package:levelup/ui/screens/home_placeholder.dart';
+import 'package:levelup/ui/screens/home_screen.dart';
 
 /// Pumps the app on an in-memory repository (the day refresher reads it).
 /// The scope lives in the widget tree, so its timers go away with the test.
@@ -26,17 +26,17 @@ Future<ProviderContainer> _pumpApp(WidgetTester tester) async {
 }
 
 ThemeData _theme(WidgetTester tester) =>
-    Theme.of(tester.element(find.byType(HomePlaceholder)));
+    Theme.of(tester.element(find.byType(HomeScreen)));
 
 AppColors _colors(WidgetTester tester) =>
     _theme(tester).extension<AppColors>()!;
 
 void main() {
   group('LevelUpApp', () {
-    testWidgets('opens the placeholder home on route /', (tester) async {
+    testWidgets('opens the home on route /', (tester) async {
       await _pumpApp(tester);
 
-      expect(find.byType(HomePlaceholder), findsOneWidget);
+      expect(find.byType(HomeScreen), findsOneWidget);
     });
 
     testWidgets('starts in the light theme with the terracotta accent', (
@@ -74,13 +74,10 @@ void main() {
       expect(_theme(tester).brightness, Brightness.dark);
     });
 
-    testWidgets('placeholder paints with the theme background and title', (
-      tester,
-    ) async {
+    testWidgets('home paints with the theme background', (tester) async {
       await _pumpApp(tester);
 
       expect(_theme(tester).scaffoldBackgroundColor, _colors(tester).bg);
-      expect(find.text('LevelUp'), findsOneWidget);
     });
   });
 }

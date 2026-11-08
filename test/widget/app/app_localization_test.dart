@@ -5,7 +5,7 @@ import 'package:levelup/app/app.dart';
 import 'package:levelup/data/in_memory_game_repository.dart';
 import 'package:levelup/l10n/app_localizations.dart';
 import 'package:levelup/state/game_providers.dart';
-import 'package:levelup/ui/screens/home_placeholder.dart';
+import 'package:levelup/ui/screens/home_screen.dart';
 
 Future<Locale> _pumpWithDeviceLocales(
   WidgetTester tester,
@@ -23,7 +23,7 @@ Future<Locale> _pumpWithDeviceLocales(
     ),
   );
   await tester.pumpAndSettle();
-  return Localizations.localeOf(tester.element(find.byType(HomePlaceholder)));
+  return Localizations.localeOf(tester.element(find.byType(HomeScreen)));
 }
 
 void main() {
@@ -37,7 +37,7 @@ void main() {
 
       expect(locale.languageCode, 'it');
       final material = MaterialLocalizations.of(
-        tester.element(find.byType(HomePlaceholder)),
+        tester.element(find.byType(HomeScreen)),
       );
       expect(material.cancelButtonLabel, 'Annulla');
     });
