@@ -354,4 +354,33 @@ void main() {
       expect(opened, 1);
     });
   });
+
+  group('HabitTile width', () {
+    testWidgets('fills the width it is given, even with a short name', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_tile(_habit(name: 'Yoga', streak: 0)));
+
+      final tile = tester.getRect(find.byType(HabitTile));
+      final body = tester.getRect(
+        find
+            .descendant(
+              of: find.byType(HabitTile),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      expect(tile.width, _tileWidth);
+      expect(body.width, _tileWidth);
+    });
+
+    testWidgets('keeps the check inside the card', (tester) async {
+      await tester.pumpWidget(_tile(_habit(name: 'Yoga', streak: 0)));
+
+      final tile = tester.getRect(find.byType(HabitTile));
+      final check = tester.getRect(find.byType(HabitCheck));
+      expect(check.right, lessThanOrEqualTo(tile.right));
+      expect(check.top, greaterThanOrEqualTo(tile.top));
+    });
+  });
 }

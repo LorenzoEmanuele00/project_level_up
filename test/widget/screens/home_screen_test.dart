@@ -193,6 +193,11 @@ void main() {
     expect(rects[2].top, greaterThan(rects[0].bottom));
     expect(rects[2].width, rects[0].width);
     expect(rects[2].left, rects[0].left);
+
+    // 390 px wide, 16 px padding, 11 px gap: two tiles fill the row.
+    const expectedWidth = (390 - 2 * 16 - 11) / 2;
+    expect(rects[0].width, expectedWidth);
+    expect(rects[1].right, 390 - 16);
   });
 
   testWidgets('tapping a check or a tile does not complete the habit yet', (

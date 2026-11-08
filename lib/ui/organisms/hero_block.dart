@@ -202,7 +202,7 @@ class _Mission extends StatelessWidget {
       kind: StatKind.peach,
       label: l10n.statDone,
       value: '${summary.doneCount}',
-      total: '/${summary.dueCount}',
+      total: '${summary.dueCount}',
     ),
     StatTile(
       kind: StatKind.mint,
