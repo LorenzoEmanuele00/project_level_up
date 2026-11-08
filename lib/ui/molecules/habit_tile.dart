@@ -58,6 +58,7 @@ class HabitTile extends StatelessWidget {
       opacity: done ? _doneOpacity : 1,
       duration: Motion.outShort,
       child: Stack(
+        fit: StackFit.passthrough,
         children: [
           Pressable(
             onTap: onOpen,

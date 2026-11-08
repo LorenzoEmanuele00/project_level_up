@@ -107,7 +107,7 @@ void main() {
           .map((t) => (t.kind, t.label, t.value, t.total))
           .toList();
       expect(tiles, [
-        (StatKind.peach, 'Fatte', '2', '/5'),
+        (StatKind.peach, 'Fatte', '2', '5'),
         (StatKind.mint, 'EXP', '30', null),
         (StatKind.sky, 'Streak', '12', null),
         (StatKind.butter, 'Livello', '3', null),
